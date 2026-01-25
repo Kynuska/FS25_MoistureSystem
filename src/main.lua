@@ -13,7 +13,9 @@ function MoistureSystem:loadMap()
 
     -- Initialize settings
     self.settings = {
-        environment = MoistureClampEnvironments.NORMAL -- Default to NORMAL
+        environment = MoistureClampEnvironments.NORMAL, -- Default to NORMAL
+        moistureLossMultiplier = 5.0,
+        moistureGainMultiplier = 5.0
     }
 
     -- Initialize property tracker
@@ -58,7 +60,9 @@ function MoistureSystem:updateMoistureLevel(timescale)
 
     -- Gain moisture from rain/snow
     if rainfall > 0 or snowfall > 0 then
-        moistureDelta = moistureDelta + (rainfall + snowfall * 0.75) * 0.009 * (timescale / 100000)
+        moistureDelta = (rainfall + snowfall * 0.75) * 0.0054 * (timescale / 100000) * self.settings.moistureGainMultiplier
+        self:adjustMoisture(moistureDelta)
+        return
     end
 
     -- Lose moisture from temperature (warmer = more loss)
@@ -68,15 +72,15 @@ function MoistureSystem:updateMoistureLevel(timescale)
     local sunFactor = (currentHour >= daylightStart and currentHour < daylightEnd) and 1 or 0.33
 
     if temperature >= 45 then
-        moistureDelta = moistureDelta - (temperature * 0.000012 * (timescale / 100000) * sunFactor)
+        moistureDelta = moistureDelta - (temperature * 0.00096 * (timescale / 100000) * sunFactor * self.settings.moistureLossMultiplier)
     elseif temperature >= 35 then
-        moistureDelta = moistureDelta - (temperature * 0.0000088 * (timescale / 100000) * sunFactor)
+        moistureDelta = moistureDelta - (temperature * 0.000704 * (timescale / 100000) * sunFactor * self.settings.moistureLossMultiplier)
     elseif temperature >= 25 then
-        moistureDelta = moistureDelta - (temperature * 0.0000038 * (timescale / 100000) * sunFactor)
+        moistureDelta = moistureDelta - (temperature * 0.000304 * (timescale / 100000) * sunFactor * self.settings.moistureLossMultiplier)
     elseif temperature >= 15 then
-        moistureDelta = moistureDelta - (temperature * 0.0000012 * (timescale / 100000) * sunFactor)
+        moistureDelta = moistureDelta - (temperature * 0.000096 * (timescale / 100000) * sunFactor * self.settings.moistureLossMultiplier)
     elseif temperature > 0 then
-        moistureDelta = moistureDelta - (temperature * 0.0000005 * (timescale / 100000) * sunFactor)
+        moistureDelta = moistureDelta - (temperature * 0.00004 * (timescale / 100000) * sunFactor * self.settings.moistureLossMultiplier)
     end
 
     -- Apply moisture change with clamping
@@ -139,9 +143,10 @@ function MoistureSystem:firstLoad()
     local minMoisture = monthData.Min
     local maxMoisture = monthData.Max
 
-    -- Set current moisture to middle of range, converted to 0-1 scale
-    local midMoisture = (minMoisture + maxMoisture) / 2
-    self.currentMoisturePercent = midMoisture / 100
+    -- Set current moisture to 25% above minimum, converted to 0-1 scale
+    local moistureRange = maxMoisture - minMoisture
+    local startMoisture = minMoisture + (moistureRange * 0.25)
+    self.currentMoisturePercent = startMoisture / 100
 end
 
 function MoistureSystem:findMidHeight()
@@ -205,6 +210,16 @@ function MoistureSystem:loadFromXMLFile()
         if environment then
             self.settings.environment = environment
         end
+        
+        local lossMultiplier = getXMLFloat(xmlFile, MoistureSystem.SaveKey .. ".settings#moistureLossMultiplier")
+        if lossMultiplier then
+            self.settings.moistureLossMultiplier = lossMultiplier
+        end
+        
+        local gainMultiplier = getXMLFloat(xmlFile, MoistureSystem.SaveKey .. ".settings#moistureGainMultiplier")
+        if gainMultiplier then
+            self.settings.moistureGainMultiplier = gainMultiplier
+        end
 
         if g_currentMission.harvestPropertyTracker then
             g_currentMission.harvestPropertyTracker:loadFromXMLFile(xmlFile, MoistureSystem.SaveKey)
@@ -229,6 +244,8 @@ function MoistureSystem:saveToXmlFile()
 
     -- Save settings
     setXMLInt(xmlFile, MoistureSystem.SaveKey .. ".settings#environment", self.settings.environment)
+    setXMLFloat(xmlFile, MoistureSystem.SaveKey .. ".settings#moistureLossMultiplier", self.settings.moistureLossMultiplier)
+    setXMLFloat(xmlFile, MoistureSystem.SaveKey .. ".settings#moistureGainMultiplier", self.settings.moistureGainMultiplier)
 
     if g_currentMission.harvestPropertyTracker then
         g_currentMission.harvestPropertyTracker:saveToXMLFile(xmlFile, MoistureSystem.SaveKey)

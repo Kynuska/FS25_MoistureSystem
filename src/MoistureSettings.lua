@@ -2,7 +2,9 @@ MoistureSettings = {}
 MoistureSettings.CONTROLS = {}
 
 MoistureSettings.menuItems = {
-    'environment'
+    'environment',
+    'moistureLossMultiplier',
+    'moistureGainMultiplier'
 }
 
 MoistureSettings.multiplayerPermissions = {
@@ -25,6 +27,22 @@ MoistureSettings.SETTINGS.environment = {
         g_i18n:getText("setting_moisture_environment_normal"),
         g_i18n:getText("setting_moisture_environment_wet")
     }
+}
+
+MoistureSettings.SETTINGS.moistureLossMultiplier = {
+    ['default'] = 5,
+    ['serverOnly'] = true,
+    ['permission'] = 'moistureSettings',
+    ['values'] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
+    ['strings'] = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" }
+}
+
+MoistureSettings.SETTINGS.moistureGainMultiplier = {
+    ['default'] = 5,
+    ['serverOnly'] = true,
+    ['permission'] = 'moistureSettings',
+    ['values'] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
+    ['strings'] = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" }
 }
 
 function MoistureSettings.getStateIndex(id, value)
