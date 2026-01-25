@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<l10n>
+	<translationContributors/>
+	<texts>
+		<!-- Settings Section -->
+		<text name="setting_moisture_section" text="Moisture System"/>
+		
+		<!-- Environment Setting -->
+		<text name="setting_moisture_environment" text="Weather Environment"/>
+		<text name="setting_moisture_environment_tooltip" text="Sets the climate type for moisture calculations"/>
+		<text name="setting_moisture_environment_dry" text="Dry"/>
+		<text name="setting_moisture_environment_normal" text="Normal"/>
+		<text name="setting_moisture_environment_wet" text="Wet"/>
+		
+		<!-- Multiplayer Permission -->
+		<text name="permission_moisture_moistureSettings" text="Change Moisture Settings"/>
+	</texts>
+</l10n>

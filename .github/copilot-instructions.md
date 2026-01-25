@@ -11,15 +11,28 @@ This mod tracks moisture levels on fields and dropped crop piles in Farming Simu
 - **Global Access**: `g_currentMission.MoistureSystem`
 - Tracks field moisture based on terrain height relative to midHeight
 - Higher elevation = lower moisture, lower elevation = higher moisture
-- Uses `getMoistureAtPosition(x, z)` to get moisture at any coordinate
+- Uses `getMoistureAtPosition(x, z)` to get moisture at any coordinate (returns 0-1 scale)
+- `currentMoisturePercent` is always stored in 0-1 range (not 0-100 percentage)
+- Initializes moisture to middle of min/max range for current month and environment
+
+### Moisture Settings & Clamp System
+- **Location**: `src/MoistureSettings.lua` and `src/MoistureClamp.lua`
+- **Global Access**: `g_currentMission.MoistureSystem.settings`
+- Provides in-game settings menu for environment type (DRY/NORMAL/WET)
+- MoistureClamp defines monthly moisture ranges (0-100 scale) for each environment
+- Settings sync across multiplayer via `MoistureSettingsEvent`
+- Server-only setting with permission-based access control
+- Persists in save game XML
 
 ### Harvest Property Tracker
 - **Location**: `src/HarvestPropertyTracker.lua`
 - **Global Access**: `g_currentMission.harvestPropertyTracker`
 - Tracks custom properties (moisture) on dropped filltype piles
-- Uses spatial grid (10m cells) for O(1) lookups
-- Automatically merges nearby piles using volume-weighted averaging
+- Uses grid-based storage (10m cells) with `"gridX_gridZ_fillType"` keys
+- Distributes volume proportionally across grid cells based on bounding box overlap
+- Automatically merges piles in same grid cell using volume-weighted averaging
 - Stores data in separate XML file: `MoistureSystem.xml`
+- Grid-aligned coordinates for O(1) lookups without spatial indexing
 
 ## FS25 Modding Patterns
 
@@ -219,10 +232,10 @@ end
 4. **No partial pickup detection** - Can't easily track when player picks up part of a pile
 
 ### Area Tracking System
-1. **Not pixel-perfect** - Uses approximate rectangular areas
-2. **Pile splitting** - If pile splits, both parts inherit same properties
-3. **Memory usage** - Each tracked pile uses ~500 bytes
-4. **Max pile limit** - Set to 500 piles to prevent memory issues
+1. **Grid-based storage** - Uses 10m consistent world grid, one pile per cell per fillType
+2. **Proportional distribution** - Drops spanning multiple cells distribute volume by bounding box overlap
+3. **Volume-weighted averaging** - Merging piles calculates weighted average of properties
+4. **Memory efficient** - No pile IDs or spatial index needed, direct grid key lookup
 
 ## Code Style Conventions
 
