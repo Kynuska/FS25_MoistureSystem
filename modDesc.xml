@@ -28,9 +28,10 @@ A mod that adds moisture to the game.
         </fr>
     </description>
     <extraSourceFiles>
+        <sourceFile filename="src/extensions/PlayerHUDUpdateExtension.lua"/>
         <sourceFile filename="src/HarvestPropertyTracker.lua"/>
         <sourceFile filename="src/MoistureClamp.lua"/>
-        <sourceFile filename="src/MoistureSettingsEvent.lua"/>
+        <sourceFile filename="src/events/MoistureSettingsEvent.lua"/>
         <sourceFile filename="src/MoistureSettings.lua"/>
         <sourceFile filename="src/main.lua"/>
     </extraSourceFiles>

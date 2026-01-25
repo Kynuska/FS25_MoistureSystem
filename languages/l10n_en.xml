@@ -14,5 +14,10 @@
 		
 		<!-- Multiplayer Permission -->
 		<text name="permission_moisture_moistureSettings" text="Change Moisture Settings"/>
+		
+		<!-- HUD Display -->
+		<text name="moistureSystem_fieldInfo" text="Field Moisture"/>
+		<text name="moistureSystem_moisture" text="Moisture"/>
+		<text name="moistureSystem_range" text="Expected Range"/>
 	</texts>
 </l10n>
