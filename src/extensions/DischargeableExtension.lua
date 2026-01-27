@@ -132,8 +132,12 @@ function MSDischargeableExtension:dischargeToObject(superFunc, dischargeNode, em
         return superFunc(self, dischargeNode, emptyLiters, targetObject, targetFillUnitIndex)
     end
 
-    local targetPlaceable = targetObject.target.owningPlaceable
-    local uniqueId = targetPlaceable.uniqueId
+    local uniqueId = targetObject.uniqueId
+
+    if uniqueId == nil and targetObject.target ~= nil and targetObject.target.owningPlaceable ~= nil then
+        local targetPlaceable = targetObject.target.owningPlaceable
+        uniqueId = targetPlaceable.uniqueId
+    end
     local fillType = self:getDischargeFillType(dischargeNode)
     local farmId = self.ownerFarmId
 
@@ -143,7 +147,7 @@ function MSDischargeableExtension:dischargeToObject(superFunc, dischargeNode, em
         targetCurrentLiters = targetObject:getFillUnitFillLevel(targetFillUnitIndex)
     end
 
-    if targetObject.target:isa(UnloadingStation) then
+    if targetObject.target ~= nil and targetObject.target:isa(UnloadingStation) then
         targetCurrentLiters = targetObject.target:getFillLevel(fillType, farmId)
     end
 
@@ -194,6 +198,32 @@ function MSDischargeableExtension:dischargeToObject(superFunc, dischargeNode, em
 
     return dischargedLiters
 end
+
+---
+-- Override dischargeToObject to inject vehicle uniqueId into extraAttributes
+-- This allows SellingStation to access vehicle moisture data
+-- @param superFunc: Original function
+-- @param dischargeNode: The discharge node being used
+-- @param emptyLiters: Amount to discharge
+-- @param object: Target object receiving the discharge
+-- @param targetFillUnitIndex: Fill unit index on target
+---
+function MSDischargeableExtension:dischargeToObject(superFunc, dischargeNode, emptyLiters, object, targetFillUnitIndex)
+    -- Inject vehicle uniqueId into dischargeNode.info before discharge
+    -- This will be passed as extraAttributes to UnloadTrigger and then SellingStation
+    if self.uniqueId ~= nil and dischargeNode.info ~= nil then
+        dischargeNode.info.sourceUniqueId = self.uniqueId
+        dischargeNode.info.sourceObject = self
+    end
+    
+    -- Call original function
+    return superFunc(self, dischargeNode, emptyLiters, object, targetFillUnitIndex)
+end
+
+Dischargeable.dischargeToGround = Utils.overwrittenFunction(
+    Dischargeable.dischargeToGround,
+    MSDischargeableExtension.dischargeToGround
+)
 
 Dischargeable.dischargeToObject = Utils.overwrittenFunction(
     Dischargeable.dischargeToObject,
