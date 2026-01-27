@@ -6,6 +6,26 @@
 MSPlayerHUDExtension = {}
 
 ---
+-- Hook into PlayerInputComponent to track where the player is looking for filltype detection
+-- This ensures setCurrentRaycastFillTypeCoords is called with the player's look ray
+---
+function MSPlayerHUDExtension:updatePlayerInput()
+    if not self.player.isOwner or g_inputBinding:getContextName() ~= PlayerInputComponent.INPUT_CONTEXT_NAME then
+        return
+    end
+
+    local x, y, z, dirX, dirY, dirZ = self.player:getLookRay()
+
+    if x == nil or y == nil or z == nil or dirX == nil or dirY == nil or dirZ == nil then
+        return
+    end
+
+    self.player.hudUpdater:setCurrentRaycastFillTypeCoords(x, y, z, dirX, dirY, dirZ)
+end
+
+PlayerInputComponent.update = Utils.appendedFunction(PlayerInputComponent.update, MSPlayerHUDExtension.updatePlayerInput)
+
+---
 -- Show field moisture information when standing on a field
 -- Appended to PlayerHUDUpdater.showFieldInfo
 ---
@@ -157,34 +177,34 @@ function MSPlayerHUDExtension:showObjectMoistureInfo()
     if self.object == nil or self.object.uniqueId == nil then
         return
     end
-    
+
     -- Skip if this is a vehicle/pallet that already shows info via their specific methods
     if self.isVehicle or self.isPallet then
         return
     end
-    
+
     local moistureSystem = g_currentMission.MoistureSystem
     if moistureSystem == nil then
         return
     end
-    
+
     local objectData = moistureSystem.objectMoisture[self.object.uniqueId]
     if objectData == nil then
         return
     end
-    
+
     -- Initialize box on first use
     if self.objectMoistureBox == nil then
         self.objectMoistureBox = g_currentMission.hud.infoDisplay:createBox(InfoDisplayKeyValueBox)
     end
-    
+
     local box = self.objectMoistureBox
     if box == nil then
         return
     end
-    
+
     box:clear()
-    
+
     -- Try to get a meaningful title
     local title = "Object"
     if self.object.getName ~= nil then
@@ -192,9 +212,9 @@ function MSPlayerHUDExtension:showObjectMoistureInfo()
     elseif self.object.configFileName ~= nil then
         title = self.object.configFileName:match("([^/]+)%.xml$") or "Object"
     end
-    
+
     box:setTitle(title)
-    
+
     -- Add moisture data for each fillType stored in this object
     local hasData = false
     for fillTypeName, moisture in pairs(objectData) do
@@ -210,7 +230,7 @@ function MSPlayerHUDExtension:showObjectMoistureInfo()
             end
         end
     end
-    
+
     if hasData then
         box:showNextFrame()
     end
@@ -226,22 +246,22 @@ function MSPlayerHUDExtension:showVehicleInfo(vehicle)
     if vehicle == nil or vehicle.uniqueId == nil then
         return
     end
-    
+
     local moistureSystem = g_currentMission.MoistureSystem
     if moistureSystem == nil then
         return
     end
-    
+
     local objectData = moistureSystem.objectMoisture[vehicle.uniqueId]
     if objectData == nil then
         return
     end
-    
+
     local box = self.objectBox
     if box == nil then
         return
     end
-    
+
     if self.objectMoistureBox ~= nil then
         g_currentMission.hud.infoDisplay:destroyBox(self.objectMoistureBox)
     end
@@ -260,7 +280,8 @@ function MSPlayerHUDExtension:showVehicleInfo(vehicle)
     end
 end
 
-PlayerHUDUpdater.showVehicleInfo = Utils.appendedFunction(PlayerHUDUpdater.showVehicleInfo, MSPlayerHUDExtension.showVehicleInfo)
+PlayerHUDUpdater.showVehicleInfo = Utils.appendedFunction(PlayerHUDUpdater.showVehicleInfo,
+    MSPlayerHUDExtension.showVehicleInfo)
 
 ---
 -- Show moisture data for pallets being looked at
@@ -270,22 +291,22 @@ function MSPlayerHUDExtension:showPalletInfo(pallet)
     if pallet == nil or pallet.uniqueId == nil then
         return
     end
-    
+
     local moistureSystem = g_currentMission.MoistureSystem
     if moistureSystem == nil then
         return
     end
-    
+
     local objectData = moistureSystem.objectMoisture[pallet.uniqueId]
     if objectData == nil then
         return
     end
-    
+
     local box = self.objectBox
     if box == nil then
         return
     end
-    
+
     -- Add moisture data for each fillType stored in this object
     for fillTypeName, moisture in pairs(objectData) do
         local fillTypeIndex = g_fillTypeManager:getFillTypeIndexByName(fillTypeName)
@@ -301,7 +322,8 @@ function MSPlayerHUDExtension:showPalletInfo(pallet)
     end
 end
 
-PlayerHUDUpdater.showPalletInfo = Utils.appendedFunction(PlayerHUDUpdater.showPalletInfo, MSPlayerHUDExtension.showPalletInfo)
+PlayerHUDUpdater.showPalletInfo = Utils.appendedFunction(PlayerHUDUpdater.showPalletInfo,
+    MSPlayerHUDExtension.showPalletInfo)
 
 ---
 -- Clean up boxes on delete
