@@ -97,8 +97,8 @@ function MSForageWagonExtension:onEndWorkAreaProcessing(superFunc, dt, hasProces
     end
     
     -- Remove pile from tracker (picked up from ground)
-    -- The tracker will handle partial removals automatically via volume reduction
-    tracker:removePileAtPosition(centerX, centerZ, fillType, pickupLiters)
+    -- Tracker will check density map to see if pile still exists
+    tracker:checkPileHasContent(centerX, centerZ, fillType)
     
     return result
 end

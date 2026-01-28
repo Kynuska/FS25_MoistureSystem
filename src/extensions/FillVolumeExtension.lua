@@ -74,8 +74,8 @@ function MSFillVolumeExtension:onFillUnitFillLevelChanged(superFunc, fillUnitInd
         moistureSystem:setObjectMoisture(uniqueId, fillType, averageMoisture)
     end
     
-    -- Remove volume from pile tracking
-    tracker:removePileAtPosition(fillPositionData.x, fillPositionData.z, fillType, fillLevelDelta)
+    -- Remove pile from tracking if nothing remains
+    tracker:checkPileHasContent(fillPositionData.x, fillPositionData.z, fillType)
 end
 
 -- Hook into FillVolume specialization (used by buckets, shovels, augers, etc.)

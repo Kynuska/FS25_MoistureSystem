@@ -2,17 +2,17 @@ HarvestPropertyTracker = {}
 local HarvestPropertyTracker_mt = Class(HarvestPropertyTracker)
 
 -- Configuration
-HarvestPropertyTracker.GRID_SIZE = 10  -- 10m grid cells for consistent world grid
+HarvestPropertyTracker.GRID_SIZE = 10 -- 10m grid cells for consistent world grid
 
 function HarvestPropertyTracker.new()
     local self = setmetatable({}, HarvestPropertyTracker_mt)
-    
+
     self.mission = g_currentMission
     self.isServer = self.mission:getIsServer()
-    
+
     -- Main storage: grid-based piles indexed by "gridX_gridZ_fillType"
     self.gridPiles = {}
-    
+
     return self
 end
 
@@ -22,8 +22,10 @@ end
 -- @return gridX, gridZ: Grid-aligned center coordinates
 ---
 function HarvestPropertyTracker:getGridPosition(x, z)
-    local gridX = math.floor(x / HarvestPropertyTracker.GRID_SIZE) * HarvestPropertyTracker.GRID_SIZE + HarvestPropertyTracker.GRID_SIZE / 2
-    local gridZ = math.floor(z / HarvestPropertyTracker.GRID_SIZE) * HarvestPropertyTracker.GRID_SIZE + HarvestPropertyTracker.GRID_SIZE / 2
+    local gridX = math.floor(x / HarvestPropertyTracker.GRID_SIZE) * HarvestPropertyTracker.GRID_SIZE +
+    HarvestPropertyTracker.GRID_SIZE / 2
+    local gridZ = math.floor(z / HarvestPropertyTracker.GRID_SIZE) * HarvestPropertyTracker.GRID_SIZE +
+    HarvestPropertyTracker.GRID_SIZE / 2
     return gridX, gridZ
 end
 
@@ -53,18 +55,18 @@ function HarvestPropertyTracker:calculateCellOverlap(cellX, cellZ, minX, maxX, m
     local cellMaxX = cellX + halfSize
     local cellMinZ = cellZ - halfSize
     local cellMaxZ = cellZ + halfSize
-    
+
     -- Calculate intersection rectangle
     local overlapMinX = math.max(cellMinX, minX)
     local overlapMaxX = math.min(cellMaxX, maxX)
     local overlapMinZ = math.max(cellMinZ, minZ)
     local overlapMaxZ = math.min(cellMaxZ, maxZ)
-    
+
     -- Calculate overlap area
     if overlapMinX < overlapMaxX and overlapMinZ < overlapMaxZ then
         return (overlapMaxX - overlapMinX) * (overlapMaxZ - overlapMinZ)
     end
-    
+
     return 0
 end
 
@@ -78,69 +80,79 @@ function HarvestPropertyTracker:getAffectedGridCells(sx, sz, wx, wz, hx, hz)
     local maxX = math.max(sx, wx, hx)
     local minZ = math.min(sz, wz, hz)
     local maxZ = math.max(sz, wz, hz)
-    
+
     local cells = {}
     local totalOverlapArea = 0
-    
+
     -- Find all grid cells that intersect this bounding box
     local startGridX = math.floor(minX / HarvestPropertyTracker.GRID_SIZE) * HarvestPropertyTracker.GRID_SIZE
     local endGridX = math.floor(maxX / HarvestPropertyTracker.GRID_SIZE) * HarvestPropertyTracker.GRID_SIZE
     local startGridZ = math.floor(minZ / HarvestPropertyTracker.GRID_SIZE) * HarvestPropertyTracker.GRID_SIZE
     local endGridZ = math.floor(maxZ / HarvestPropertyTracker.GRID_SIZE) * HarvestPropertyTracker.GRID_SIZE
-    
+
     for gx = startGridX, endGridX, HarvestPropertyTracker.GRID_SIZE do
         for gz = startGridZ, endGridZ, HarvestPropertyTracker.GRID_SIZE do
-            local gridX, gridZ = self:getGridPosition(gx + HarvestPropertyTracker.GRID_SIZE / 2, gz + HarvestPropertyTracker.GRID_SIZE / 2)
+            local gridX, gridZ = self:getGridPosition(gx + HarvestPropertyTracker.GRID_SIZE / 2,
+                gz + HarvestPropertyTracker.GRID_SIZE / 2)
             local overlapArea = self:calculateCellOverlap(gridX, gridZ, minX, maxX, minZ, maxZ)
-            
+
             if overlapArea > 0 then
-                table.insert(cells, {gridX = gridX, gridZ = gridZ, overlapArea = overlapArea})
+                table.insert(cells, { gridX = gridX, gridZ = gridZ, overlapArea = overlapArea })
                 totalOverlapArea = totalOverlapArea + overlapArea
             end
         end
     end
-    
+
     return cells, totalOverlapArea
 end
 
 ---
 -- Add a new dropped pile to tracking
--- Distributes volume proportionally across grid cells based on overlap area
+-- Distributes properties across grid cells based on overlap area
 -- @param sx, sz, wx, wz, hx, hz: Area coordinates (start, width, height corners)
 -- @param fillType: The filltype index being dropped
--- @param volume: Volume in liters of the dropped material
+-- @param volume: Volume in liters (used only for weighted averaging, not stored)
 -- @param properties: Table of properties {moisture=0.18}
 ---
 function HarvestPropertyTracker:addPile(sx, sz, wx, wz, hx, hz, fillType, volume, properties)
     if not self.isServer then return end
-    
+
     -- Get all grid cells this drop affects with their overlap areas
     local affectedCells, totalOverlapArea = self:getAffectedGridCells(sx, sz, wx, wz, hx, hz)
-    
+
     if #affectedCells == 0 or totalOverlapArea == 0 then return end
-    
-    -- Distribute volume proportionally based on overlap area
+
+    -- Distribute proportionally based on overlap area
     for _, cell in ipairs(affectedCells) do
         local proportion = cell.overlapArea / totalOverlapArea
         local volumeForCell = volume * proportion
-        
+
         local key = self:getGridKey(cell.gridX, cell.gridZ, fillType)
         local pile = self.gridPiles[key]
-        
+
         if pile then
             -- Update existing pile with volume-weighted averaging
-            local totalVolume = pile.volume + volumeForCell
-            
+            -- Get actual volume from density map for accurate weighting
+            local checkRadius = HarvestPropertyTracker.GRID_SIZE / 2
+            local existingVolume = DensityMapHeightUtil.getFillLevelAtArea(
+                fillType,
+                cell.gridX - checkRadius, cell.gridZ - checkRadius,
+                cell.gridX + checkRadius, cell.gridZ - checkRadius,
+                cell.gridX - checkRadius, cell.gridZ + checkRadius
+            )
+
+            local totalVolume = existingVolume + volumeForCell
+
             for propKey, propValue in pairs(properties or {}) do
-                if pile.properties[propKey] then
+                local originalValue = pile.properties[propKey]
+                if originalValue and totalVolume > 0 then
                     -- Volume-weighted average
-                    pile.properties[propKey] = (pile.properties[propKey] * pile.volume + propValue * volumeForCell) / totalVolume
+                    pile.properties[propKey] = (originalValue * existingVolume + propValue * volumeForCell) / totalVolume
                 else
                     pile.properties[propKey] = propValue
                 end
             end
-            
-            pile.volume = totalVolume
+
             pile.lastUpdateTime = self.mission.time
         else
             -- Create new pile at this grid cell
@@ -149,40 +161,44 @@ function HarvestPropertyTracker:addPile(sx, sz, wx, wz, hx, hz, fillType, volume
                 gridZ = cell.gridZ,
                 fillType = fillType,
                 fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillType),
-                volume = volumeForCell,
                 properties = properties or {},
                 createdTime = self.mission.time,
                 lastUpdateTime = self.mission.time
             }
+
+            for propKey, propValue in pairs(properties or {}) do
+                print(string.format("[TRACKER addPile] Grid (%d,%d) %s: CREATE = %.3f (%.1fL)",
+                    cell.gridX, cell.gridZ,
+                    propKey, propValue, volumeForCell))
+            end
         end
     end
 end
 
 ---
--- Remove or reduce a pile when material is picked up
+-- Remove a pile tracking when material is picked up
+-- Uses DensityMapHeightUtil to check if material still exists
 -- @param sx, sz, wx, wz, hx, hz: Area where material was removed
 -- @param fillType: The filltype being picked up
 ---
 function HarvestPropertyTracker:removePileAtArea(sx, sz, wx, wz, hx, hz, fillType)
     if not self.isServer then return end
-    
+
     local affectedCells = self:getAffectedGridCells(sx, sz, wx, wz, hx, hz)
-    
+
     for _, cell in ipairs(affectedCells) do
         local key = self:getGridKey(cell.gridX, cell.gridZ, fillType)
         local pile = self.gridPiles[key]
-        
+
         if pile then
             -- Check if actual filltype still exists at this grid location
-            local checkX, checkZ = cell.gridX, cell.gridZ
             local checkRadius = HarvestPropertyTracker.GRID_SIZE / 2
-            
             local existingFillType = DensityMapHeightUtil.getFillTypeAtArea(
-                checkX - checkRadius, checkZ - checkRadius,
-                checkX + checkRadius, checkZ - checkRadius,
-                checkX - checkRadius, checkZ + checkRadius
+                cell.gridX - checkRadius, cell.gridZ - checkRadius,
+                cell.gridX + checkRadius, cell.gridZ - checkRadius,
+                cell.gridX - checkRadius, cell.gridZ + checkRadius
             )
-            
+
             if existingFillType ~= fillType then
                 -- Pile no longer exists at this grid cell
                 self.gridPiles[key] = nil
@@ -201,11 +217,11 @@ function HarvestPropertyTracker:getPropertiesAtLocation(x, z, fillType)
     local gridX, gridZ = self:getGridPosition(x, z)
     local key = self:getGridKey(gridX, gridZ, fillType)
     local pile = self.gridPiles[key]
-    
+
     if pile then
         return pile.properties
     end
-    
+
     return nil
 end
 
@@ -214,10 +230,10 @@ end
 ---
 function HarvestPropertyTracker:validateTrackedPiles()
     if not self.isServer then return end
-    
+
     local toRemove = {}
     local checkRadius = HarvestPropertyTracker.GRID_SIZE / 2
-    
+
     for key, pile in pairs(self.gridPiles) do
         -- Check if filltype still exists at this grid location
         local existingFillType = DensityMapHeightUtil.getFillTypeAtArea(
@@ -225,16 +241,16 @@ function HarvestPropertyTracker:validateTrackedPiles()
             pile.gridX + checkRadius, pile.gridZ - checkRadius,
             pile.gridX - checkRadius, pile.gridZ + checkRadius
         )
-        
+
         if existingFillType ~= pile.fillType then
             table.insert(toRemove, key)
         end
     end
-    
+
     for _, key in ipairs(toRemove) do
         self.gridPiles[key] = nil
     end
-    
+
     if #toRemove > 0 then
         print(string.format("HarvestPropertyTracker: Cleaned up %d invalid piles", #toRemove))
     end
@@ -250,35 +266,39 @@ function HarvestPropertyTracker:getPilePropertiesAtPosition(x, z, fillType)
     local gridX, gridZ = self:getGridPosition(x, z)
     local key = self:getGridKey(gridX, gridZ, fillType)
     local pile = self.gridPiles[key]
-    
-    if pile and pile.volume > 0 then
+
+    if pile then
         return pile.properties
     end
-    
+
     return nil
 end
 
 ---
--- Remove volume from a pile at position (used when pickup happens)
+-- Remove pile tracking at position if nothing remains (used when pickup happens)
+-- Uses DensityMapHeightUtil to check if filltype still exists at this location
 -- @param x, z: World coordinates of pickup
 -- @param fillType: The filltype being picked up
--- @param volumeRemoved: Volume removed in liters
 ---
-function HarvestPropertyTracker:removePileAtPosition(x, z, fillType, volumeRemoved)
+function HarvestPropertyTracker:checkPileHasContent(x, z, fillType)
     if not self.isServer then return end
-    
+
     local gridX, gridZ = self:getGridPosition(x, z)
     local key = self:getGridKey(gridX, gridZ, fillType)
     local pile = self.gridPiles[key]
-    
+
     if pile then
-        pile.volume = pile.volume - volumeRemoved
-        
-        -- If pile is empty or nearly empty, remove it
-        if pile.volume <= 0.1 then
+        -- Check if filltype still exists at this grid location
+        local checkRadius = HarvestPropertyTracker.GRID_SIZE / 2
+        local existingFillType = DensityMapHeightUtil.getFillTypeAtArea(
+            gridX - checkRadius, gridZ - checkRadius,
+            gridX + checkRadius, gridZ - checkRadius,
+            gridX - checkRadius, gridZ + checkRadius
+        )
+
+        if existingFillType ~= fillType then
+            -- Pile no longer exists, remove tracking
             self.gridPiles[key] = nil
-        else
-            pile.lastUpdateTime = self.mission.time
         end
     end
 end
@@ -288,70 +308,68 @@ end
 ---
 function HarvestPropertyTracker:saveToXMLFile(xmlFile, key)
     if not self.isServer then return end
-    
+
     local i = 0
     for gridKey, pile in pairs(self.gridPiles) do
         local pileKey = string.format("%s.pile(%d)", key, i)
-        
+
         setXMLInt(xmlFile, pileKey .. "#fillType", pile.fillType)
-        setXMLFloat(xmlFile, pileKey .. "#volume", pile.volume)
         setXMLFloat(xmlFile, pileKey .. "#gridX", pile.gridX)
         setXMLFloat(xmlFile, pileKey .. "#gridZ", pile.gridZ)
         setXMLInt(xmlFile, pileKey .. "#createdTime", pile.createdTime)
         setXMLInt(xmlFile, pileKey .. "#lastUpdateTime", pile.lastUpdateTime)
-        
+
         -- Save moisture
         if pile.properties.moisture then
             setXMLFloat(xmlFile, pileKey .. "#moisture", pile.properties.moisture)
         end
-        
+
         i = i + 1
     end
-    
+
     print(string.format("HarvestPropertyTracker: Saved %d piles", i))
 end
 
 function HarvestPropertyTracker:loadFromXMLFile(xmlFile, key)
     if not self.isServer then return end
-    
+
     local i = 0
     local loadedCount = 0
-    
+
     while true do
         local pileKey = string.format("%s.pile(%d)", key, i)
-        
+
         if not hasXMLProperty(xmlFile, pileKey) then
             break
         end
-        
+
         local fillType = getXMLInt(xmlFile, pileKey .. "#fillType")
         local gridX = getXMLFloat(xmlFile, pileKey .. "#gridX")
         local gridZ = getXMLFloat(xmlFile, pileKey .. "#gridZ")
-        
+
         local pile = {
             fillType = fillType,
             fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillType),
-            volume = getXMLFloat(xmlFile, pileKey .. "#volume"),
             gridX = gridX,
             gridZ = gridZ,
             createdTime = getXMLInt(xmlFile, pileKey .. "#createdTime"),
             lastUpdateTime = getXMLInt(xmlFile, pileKey .. "#lastUpdateTime"),
             properties = {}
         }
-        
+
         -- Load moisture
         local moisture = getXMLFloat(xmlFile, pileKey .. "#moisture")
         if moisture then
             pile.properties.moisture = moisture
         end
-        
+
         local gridKey = self:getGridKey(gridX, gridZ, fillType)
         self.gridPiles[gridKey] = pile
         loadedCount = loadedCount + 1
-        
+
         i = i + 1
     end
-    
+
     print(string.format("HarvestPropertyTracker: Loaded %d piles", loadedCount))
 end
 
