@@ -11,9 +11,8 @@ function MoistureSystem:loadMap()
     self.timeSinceLastUpdate = 0
     self.updateInterval = 500
 
-    -- Initialize settings
     self.settings = {
-        environment = MoistureClampEnvironments.NORMAL, -- Default to NORMAL
+        environment = MoistureClampEnvironments.NORMAL,
         moistureLossMultiplier = 3.0,
         moistureGainMultiplier = 3.0,
         teddingMoistureReduction = 0.02
@@ -23,8 +22,6 @@ function MoistureSystem:loadMap()
     g_currentMission.harvestPropertyTracker = HarvestPropertyTracker.new()
 
     -- Initialize vehicle/object moisture tracking
-    -- Structure: { [uniqueId] = { [fillTypeName] = moisture } }
-    -- fillTypeName is the string name to support save/load
     self.objectMoisture = {}
 
     -- Load from XML file (called directly during loadMap, not via hook)
@@ -35,17 +32,17 @@ function MoistureSystem:loadMap()
         MoistureSettings.injectMenu()
     end
 
-    -- Register action event for menu
-    FSBaseMission.registerActionEvents = Utils.appendedFunction(FSBaseMission.registerActionEvents, MoistureSystem.registerActionEventsPlayer)
+    self:loadGUI()
+end
 
-    -- Load GUI
+function MoistureSystem:loadGUI()
     g_gui:loadProfiles(MoistureSystem.dir .. "src/gui/guiProfiles.xml")
     local gradesFrame = MoistureGuiGrades.new(g_i18n)
     g_gui:loadGui(MoistureSystem.dir .. "src/gui/MoistureGuiGrades.xml", "MoistureGuiGrades", gradesFrame, true)
-    
+
     local calendarFrame = MoistureGuiCalendar.new(g_i18n)
     g_gui:loadGui(MoistureSystem.dir .. "src/gui/MoistureGuiCalendar.xml", "MoistureGuiCalendar", calendarFrame, true)
-    
+
     self.moistureGui = MoistureGui:new(g_messageCenter, g_i18n, g_inputBinding)
     g_gui:loadGui(MoistureSystem.dir .. "src/gui/MoistureGui.xml", "MoistureGui", self.moistureGui)
 end
@@ -473,6 +470,7 @@ end
 ---
 function MoistureSystem.ShowMoistureGUI()
     if g_gui.currentGui == nil then
+        -- g_currentMission.MoistureSystem:loadGUI() -- Useful when developing UI
         g_gui:showGui("MoistureGui")
     end
 end
