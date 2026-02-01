@@ -5,18 +5,18 @@
 		<!-- Settings Section -->
 		<text name="setting_moisture_section" text="Moisture System"/>
 		
-		<!-- Environment Setting -->
+		<!-- Settings -->
 		<text name="setting_moisture_environment" text="Weather Environment"/>
 		<text name="setting_moisture_environment_tooltip" text="Sets the climate type for moisture calculations"/>
 		<text name="setting_moisture_environment_dry" text="DRY"/>
 		<text name="setting_moisture_environment_normal" text="NORMAL"/>
 		<text name="setting_moisture_environment_wet" text="WET"/>
-		
-		<!-- Multiplier Settings -->
 		<text name="setting_moisture_moistureLossMultiplier" text="Moisture Loss Multiplier"/>
 		<text name="setting_moisture_moistureLossMultiplier_tooltip" text="Controls the speed of moisture loss (1-10)"/>
 		<text name="setting_moisture_moistureGainMultiplier" text="Moisture Gain Multiplier"/>
 		<text name="setting_moisture_moistureGainMultiplier_tooltip" text="Controls the speed of moisture gain from rain (1-10)"/>
+		<text name="setting_moisture_teddingMoistureReduction" text="Tedding Moisture Reduction"/>
+		<text name="setting_moisture_teddingMoistureReduction_tooltip" text="Amount of moisture reduced per tedding pass (1-5%)"/>
 		
 		<!-- Multiplayer Permission -->
 		<text name="permission_moisture_moistureSettings" text="Change Moisture Settings"/>
