@@ -65,11 +65,12 @@ function MoistureGuiCalendar:updateCalendar()
     local monthData = MoistureClamp.Environments[environment].Months
 
     -- Update each month cell with the min-max range
-    for month = 1, 12 do
+    for period = 1, 12 do
+        local month = MoistureSystem.periodToMonth(period)
         local data = monthData[month]
-        if data and self.monthCells[month] then
+        if data and self.monthCells[period] then
             local rangeText = string.format("%d-%d%%", data.Min, data.Max)
-            self.monthCells[month]:setText(rangeText)
+            self.monthCells[period]:setText(rangeText)
         end
     end
 
