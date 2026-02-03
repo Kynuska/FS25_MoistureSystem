@@ -68,11 +68,16 @@ function PilePropertyUpdateEvent:run(connection)
             local hx = self.gridX - halfSize - buffer
             local hz = self.gridZ + halfSize + buffer
 
-            -- local grassFillType = g_fillTypeManager:getFillTypeIndexByName("GRASS_WINDROW")
-            local hayFillType = g_fillTypeManager:getFillTypeIndexByName("DRYGRASS_WINDROW")
-            -- print(string.format("[HAY CONVERSION] Cell (%d,%d) moisture %.1f%% <= %.1f%% threshold - converting GRASS to HAY (with 20%% buffer)",
-            --     self.gridX, self.gridZ, self.properties.moisture * 100, MSTedderExtension.DRY_THRESHOLD * 100))
-            DensityMapHeightUtil.changeFillTypeAtArea(sx, sz, wx, wz, hx, hz, self.fillTypeIndex, hayFillType)
+            -- Get the appropriate hay type for this grass type
+            local grassFillTypeName = g_fillTypeManager:getFillTypeNameByIndex(self.fillTypeIndex)
+            local hayFillTypeName = HarvestPropertyTracker.GRASS_CONVERSION_MAP[grassFillTypeName]
+            local hayFillType = g_fillTypeManager:getFillTypeIndexByName(hayFillTypeName)
+            
+            if hayFillType then
+                -- print(string.format("[HAY CONVERSION] Cell (%d,%d) moisture %.1f%% <= %.1f%% threshold - converting %s to %s (with 20%% buffer)",
+                --     self.gridX, self.gridZ, self.properties.moisture * 100, MSTedderExtension.DRY_THRESHOLD * 100, grassFillTypeName, hayFillTypeName))
+                DensityMapHeightUtil.changeFillTypeAtArea(sx, sz, wx, wz, hx, hz, self.fillTypeIndex, hayFillType)
+            end
             
             -- Mark this cell as a "hay cell" for 5 seconds (10 cycles at 500ms each)
             local gridKey = tracker:getSimpleGridKey(self.gridX, self.gridZ)
