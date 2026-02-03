@@ -350,7 +350,7 @@ end
 
 **Inject settings into in-game menu:**
 ```lua
-function ModSettings.injectMenu()
+function ModSettings.addSettingsToMenu()
     local inGameMenu = g_gui.screenControllers[InGameMenu]
     local settingsPage = inGameMenu.pageSettings
     

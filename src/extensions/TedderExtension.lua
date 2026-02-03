@@ -10,19 +10,9 @@ function MSTedderExtension:processDropArea(superFunc, dropArea, fillType, amount
 
     -- Check if dropping grass into a recent hay cell - if so, convert to hay
     local tracker = g_currentMission.harvestPropertyTracker
-    local moistureSystem = g_currentMission.MoistureSystem
     local sx, sy, sz = getWorldTranslation(dropArea.start)
     local wx, wy, wz = getWorldTranslation(dropArea.width)
     local hx, hy, hz = getWorldTranslation(dropArea.height)
-    local centerX = (sx + wx + hx) / 3
-    local centerZ = (sz + wz + hz) / 3
-
-    -- if tracker:isRecentHayCell(centerX, centerZ) then
-    --     print(string.format("[TEDDER] Dropping grass at (%.0f,%.0f) into recent hay cell - converting to hay", centerX,
-    --         centerZ))
-    --     local hayFillType = g_fillTypeManager:getFillTypeIndexByName("DRYGRASS_WINDROW")
-    --     return superFunc(self, dropArea, hayFillType, amount)
-    -- end
 
     local startX, startY, startZ, endX, endY, endZ, radius = DensityMapHeightUtil.getLineByArea(dropArea.start,
         dropArea.width, dropArea.height, true)
@@ -34,7 +24,7 @@ function MSTedderExtension:processDropArea(superFunc, dropArea, fillType, amount
     if dropped > 0 then
         -- Don't call addPile here - let updateGrassMoisture handle pile creation/update
         -- But store the pickup moisture so it can be used when recreating the pile
-        
+
         -- Store the pickup moisture for affected grid cells
         if dropArea.outputMoisture then
             local affectedCells = tracker:getAffectedGridCells(sx, sz, wx, wz, hx, hz)
@@ -43,7 +33,7 @@ function MSTedderExtension:processDropArea(superFunc, dropArea, fillType, amount
                 tracker.teddedGrassMoisture[gridKey] = dropArea.outputMoisture
             end
         end
-        
+
         -- Mark area as tedded so updateGrassMoisture will process it
         tracker:markAreaTedded(sx, sz, wx, wz, hx, hz)
     end
@@ -76,30 +66,9 @@ function MSTedderExtension:processTedderArea(_, workArea, dt)
         print(string.format("[TEDDER] Pickup at (%.0f,%.0f): Found pile moisture %.1f%%", centerX, centerZ,
             positionMoisture * 100))
     else
-        -- -- No pile at current location - check adjacent cells for lowest moisture
-        -- local adjacentCells = tracker:getAdjacentCellsWithMoisture(centerX, centerZ, grassFillTypeIndex)
-
-        -- if #adjacentCells > 0 then
-        --     -- Find the lowest moisture from adjacent cells
-        --     local lowestMoisture = math.huge
-        --     for _, cell in ipairs(adjacentCells) do
-        --         if cell.properties.moisture < lowestMoisture then
-        --             lowestMoisture = cell.properties.moisture
-        --         end
-        --     end
-        --     positionMoisture = lowestMoisture
-        --     print(string.format("[TEDDER] Pickup at (%.0f,%.0f): Using adjacent tedded lowest moisture %.1f%% from %d cells",
-        --         centerX, centerZ, positionMoisture * 100, #adjacentCells))
-        -- else
-        -- No adjacent data - fall back to field moisture
-        -- positionMoisture = moistureSystem:getMoistureAtPosition(centerX, centerZ)
-        -- print(string.format("[TEDDER] Pickup at (%.0f,%.0f): No adjacent data, using field moisture %.1f%%",
-        --     centerX, centerZ, positionMoisture * 100))
         positionMoisture = nil
-        -- end
     end
 
-    -- pick up
     local lsx, lsy, lsz, lex, ley, lez, lineRadius = DensityMapHeightUtil.getLineByAreaDimensions(sx, sy, sz, wx, wy, wz,
         hx, hy, hz, true)
 
@@ -122,7 +91,6 @@ function MSTedderExtension:processTedderArea(_, workArea, dt)
             targetFillType = workArea.lastDropFillType
         end
 
-        -- local pickedUpNonHay = math.abs(pickedUpLiters) > math.abs(pickedUpHay)
         local gridCells = tracker:getAffectedGridCells(sx, sz, wx, wz, hx, hz)
         if pickedUpLiters ~= 0 and targetFillType == hayFillTypeIndex then
             for _, cell in pairs(gridCells) do
@@ -182,7 +150,6 @@ function MSTedderExtension:processTedderArea(_, workArea, dt)
                             end
 
                             g_effectManager:setDensity(effect.effects, math.max(lastSpeed / self:getSpeedLimit(), 0.6))
-
                             effect.isActive = true
                         end
                     end

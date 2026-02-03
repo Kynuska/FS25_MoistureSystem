@@ -76,6 +76,7 @@ end
 -- @return true if grass type
 ---
 function HarvestPropertyTracker:isGrassFillType(fillType)
+    -- I don't need think we need the non WINDROW types, but just in case
     local grasses = {
         ["GRASS_WINDROW"] = true,
         ["GRASS"] = true,
@@ -563,9 +564,6 @@ function HarvestPropertyTracker:getPilePropertiesAtPosition(x, z, fillType)
     return nil
 end
 
----
--- Save/Load functionality
----
 function HarvestPropertyTracker:saveToXMLFile(xmlFile, key)
     if not self.isServer then return end
 
@@ -605,7 +603,7 @@ function HarvestPropertyTracker:saveToXMLFile(xmlFile, key)
         i = i + 1
     end
 
-    print(string.format("HarvestPropertyTracker: Saved %d crop piles, %d grass piles", cropCount, i))
+    -- print(string.format("HarvestPropertyTracker: Saved %d crop piles, %d grass piles", cropCount, i))
 end
 
 function HarvestPropertyTracker:loadFromXMLFile(xmlFile, key)
@@ -684,5 +682,5 @@ function HarvestPropertyTracker:loadFromXMLFile(xmlFile, key)
         i = i + 1
     end
 
-    print(string.format("HarvestPropertyTracker: Loaded %d crop piles, %d grass piles", cropCount, loadedCount))
+    -- print(string.format("HarvestPropertyTracker: Loaded %d crop piles, %d grass piles", cropCount, loadedCount))
 end

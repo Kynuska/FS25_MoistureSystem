@@ -101,7 +101,7 @@ local function updateFocusIds(element)
     end
 end
 
-function MoistureSettings.injectMenu()
+function MoistureSettings.addSettingsToMenu()
     local inGameMenu = g_gui.screenControllers[InGameMenu]
     local settingsPage = inGameMenu.pageSettings
     -- The name is required as otherwise the focus manager would ignore any control which has MoistureSettings as a callback target

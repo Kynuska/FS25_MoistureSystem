@@ -30,7 +30,7 @@ function MoistureSystem:loadMap()
 
     -- Inject menu after GUI is ready
     if g_gui then
-        MoistureSettings.injectMenu()
+        MoistureSettings.addSettingsToMenu()
     end
 
     self:loadGUI()
@@ -182,24 +182,30 @@ function MoistureSystem:firstLoad()
     self.currentMoisturePercent = startMoisture / 100
 end
 
-function MoistureSystem:findMidHeight()
-    local minHeight = math.huge
-    local maxHeight = -math.huge
-    local count = 0
+function MoistureSystem:setHeights()
+    local heights = {}
     for _, farmland in pairs(g_farmlandManager.farmlands) do
         if farmland.showOnFarmlandsScreen and farmland.field ~= nil then
             local field = farmland.field
             local x, z = field:getCenterOfFieldWorldPosition()
             local height = getTerrainHeightAtWorldPos(g_terrainNode, x, 0, z)
-            minHeight = math.min(minHeight, height)
-            maxHeight = math.max(maxHeight, height)
-            count = count + 1
+            table.insert(heights, height)
         end
     end
-    if count > 0 then
-        self.minHeight = minHeight
-        self.maxHeight = maxHeight
-        self.midHeight = (minHeight + maxHeight) / 2
+
+    if #heights > 0 then
+        table.sort(heights)
+
+        -- Use median for midHeight
+        local midIndex = math.ceil(#heights / 2)
+        self.midHeight = heights[midIndex]
+
+        -- Use IQR for min/max (25th and 75th percentile)
+        local q1Index = math.max(1, math.ceil(#heights * 0.25))
+        local q3Index = math.min(#heights, math.ceil(#heights * 0.75))
+
+        self.minHeight = heights[q1Index]
+        self.maxHeight = heights[q3Index]
     else
         self.minHeight = 0
         self.maxHeight = 0
@@ -282,17 +288,14 @@ function MoistureSystem:transferMoisture(sourceId, targetId, sourceLiters, targe
     if sourceMoisture == nil and targetMoisture == nil then
         sourceMoisture = self.currentMoisturePercent
     elseif sourceMoisture == nil then
-        -- Source has no moisture but target does - shouldn't happen in normal flow
-        -- Use target moisture as fallback
+        -- Do nothing, target moisture will remain the same
         return
     end
 
     if targetMoisture == nil or targetCurrentLiters <= 0 then
-        -- Target is empty or has no moisture set, use source moisture
         self:setObjectMoisture(targetId, fillType, sourceMoisture)
     else
         -- Volume-weighted average
-        -- (targetLiters * targetMoisture + sourceLiters * sourceMoisture) / (targetLiters + sourceLiters)
         local totalLiters = targetCurrentLiters + sourceLiters
         local weightedMoisture = (targetCurrentLiters * targetMoisture) + (sourceLiters * sourceMoisture)
         self:setObjectMoisture(targetId, fillType, weightedMoisture / totalLiters)
@@ -311,7 +314,7 @@ end
 function MoistureSystem:onStartMission()
     CropValueMap.initialize()
     local ms = g_currentMission.MoistureSystem
-    ms:findMidHeight()
+    ms:setHeights()
     ms.missionStarted = true
 
     -- for _, fruit in pairs(g_fruitTypeManager.nameToFruitType) do
@@ -457,27 +460,12 @@ function MoistureSystem:saveToXmlFile()
     delete(xmlFile)
 end
 
--- ---
--- -- Register action events for player
--- ---
--- function MoistureSystem:registerActionEventsPlayer()
---     local result, eventName = InputBinding.registerActionEvent(
---         g_inputBinding, 'moisture_menu',
---         self, MoistureSystem.actionOpenMoistureGui,
---         false, true, false, true
---     )
-
---     if result then
---         g_inputBinding.events[eventName].displayIsVisible = true
---     end
--- end
-
 ---
 -- Action callback to open moisture GUI
 ---
 function MoistureSystem.ShowMoistureGUI()
     if g_gui.currentGui == nil then
-        g_currentMission.MoistureSystem:loadGUI() -- Useful when developing UI
+        -- g_currentMission.MoistureSystem:loadGUI() -- Useful when developing UI
         g_gui:showGui("MoistureGui")
     end
 end
