@@ -11,7 +11,13 @@
     <description>
         <en><![CDATA[Moisture System
 
-A mod that adds moisture to the game.
+This mod adds a dynamic moisture system that tracks field and crop moisture levels throughout the growing season. Moisture varies by terrain elevation and changes based on weather conditions including rainfall, temperature, and time of day.
+
+Harvested crops have moisture values that affect their quality grade (A through D) and sell price. Each crop has unique moisture thresholds that influence its grade. Manage your harvest timing carefully to maximize profits!
+
+Features include terrain-based moisture variation, grass tedding and drying mechanics, tracked moisture on dropped crop piles, and configurable environment types (Dry/Normal/Wet). Access detailed crop grade tables and moisture calendars via the in-game menu (Shift+M).
+
+Github: https://github.com/sprkem/FS25_MoistureSystem
 
 ]]>
         </en>
