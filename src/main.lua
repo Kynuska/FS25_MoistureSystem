@@ -613,7 +613,7 @@ end
 ---
 function MoistureSystem.ShowMoistureGUI()
     if g_gui.currentGui == nil then
-        -- g_currentMission.MoistureSystem:loadGUI() -- Useful when developing UI
+        g_currentMission.MoistureSystem:loadGUI() -- Useful when developing UI
         g_gui:showGui("MoistureGui")
     end
 end

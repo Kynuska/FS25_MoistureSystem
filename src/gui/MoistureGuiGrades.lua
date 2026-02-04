@@ -41,12 +41,12 @@ function MoistureGuiGrades:updateTable()
         -- local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillTypeIndex)
         local fillTypeTitle = g_fillTypeManager:getFillTypeByIndex(fillTypeIndex).title
         
-        -- Get range and multiplier for each grade
+        -- Collect ranges for each grade (up to 2 ranges per grade)
         local gradeData = {
-            [CropValueMap.Grades.A] = "-",
-            [CropValueMap.Grades.B] = "-",
-            [CropValueMap.Grades.C] = "-",
-            [CropValueMap.Grades.D] = "-"
+            [CropValueMap.Grades.A] = {},
+            [CropValueMap.Grades.B] = {},
+            [CropValueMap.Grades.C] = {},
+            [CropValueMap.Grades.D] = {}
         }
         
         for _, range in ipairs(ranges) do
@@ -54,15 +54,19 @@ function MoistureGuiGrades:updateTable()
             local upperPercent = math.floor(range.upper * 100)
             local multiplierPercent = math.floor(range.multiplier * 100)
             local rangeText = string.format("%d-%d%% (%d%%)", lowerPercent, upperPercent, multiplierPercent)
-            gradeData[range.grade] = rangeText
+            table.insert(gradeData[range.grade], rangeText)
         end
         
         table.insert(tableData, {
             name = fillTypeTitle,
-            gradeA = gradeData[CropValueMap.Grades.A],
-            gradeB = gradeData[CropValueMap.Grades.B],
-            gradeC = gradeData[CropValueMap.Grades.C],
-            gradeD = gradeData[CropValueMap.Grades.D]
+            gradeA1 = gradeData[CropValueMap.Grades.A][1] or "-",
+            gradeA2 = gradeData[CropValueMap.Grades.A][2] or "",
+            gradeB1 = gradeData[CropValueMap.Grades.B][1] or "-",
+            gradeB2 = gradeData[CropValueMap.Grades.B][2] or "",
+            gradeC1 = gradeData[CropValueMap.Grades.C][1] or "-",
+            gradeC2 = gradeData[CropValueMap.Grades.C][2] or "",
+            gradeD1 = gradeData[CropValueMap.Grades.D][1] or "-",
+            gradeD2 = gradeData[CropValueMap.Grades.D][2] or ""
         })
     end
     

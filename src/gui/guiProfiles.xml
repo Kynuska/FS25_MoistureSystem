@@ -13,7 +13,7 @@
     </Profile>
     <Profile name="msTable" extends="emptyPanel" with="anchorStretchingYLeft pivotTopLeft" />
     <Profile name="msListItem" extends="baseReference" with="anchorTopStretchingX alternating">
-        <height value="32px"/>
+        <height value="42px"/>
         <imageColor value="$preset_fs25_colorGrey" />
         <imageSelectedColor value="$preset_fs25_colorMainHighlight" />
         <alternateBackgroundColor value="$preset_fs25_colorGreyDark_50" />

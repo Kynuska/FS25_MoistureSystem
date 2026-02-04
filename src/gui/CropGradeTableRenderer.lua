@@ -32,10 +32,14 @@ function CropGradeTableRenderer:populateCellForItemInSection(list, section, inde
     local cropData = self.data[index]
 
     cell:getAttribute("cropName"):setText(cropData.name)
-    cell:getAttribute("gradeA"):setText(cropData.gradeA)
-    cell:getAttribute("gradeB"):setText(cropData.gradeB)
-    cell:getAttribute("gradeC"):setText(cropData.gradeC)
-    cell:getAttribute("gradeD"):setText(cropData.gradeD)
+    cell:getAttribute("gradeA1"):setText(cropData.gradeA1)
+    cell:getAttribute("gradeA2"):setText(cropData.gradeA2)
+    cell:getAttribute("gradeB1"):setText(cropData.gradeB1)
+    cell:getAttribute("gradeB2"):setText(cropData.gradeB2)
+    cell:getAttribute("gradeC1"):setText(cropData.gradeC1)
+    cell:getAttribute("gradeC2"):setText(cropData.gradeC2)
+    cell:getAttribute("gradeD1"):setText(cropData.gradeD1)
+    cell:getAttribute("gradeD2"):setText(cropData.gradeD2)
 end
 
 function CropGradeTableRenderer:onListSelectionChanged(list, section, index)

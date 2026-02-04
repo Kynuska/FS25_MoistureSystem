@@ -84,7 +84,7 @@ function MSTedderExtension:processTedderArea(_, workArea, dt)
                 lineRadius, nil, nil, false, nil)
             if pickup ~= 0 then
                 pickedUpLiters = pickedUpLiters + pickup
-                if tracker:isHayFillType(inputFillType) then
+                if g_currentMission.MoistureSystem:isHayFillType(inputFillType) then
                     pickedUpHay = pickedUpHay + pickup
                 end
             end
@@ -95,7 +95,7 @@ function MSTedderExtension:processTedderArea(_, workArea, dt)
         end
 
         local gridCells = tracker:getAffectedGridCells(sx, sz, wx, wz, hx, hz)
-        if pickedUpLiters ~= 0 and tracker:isHayFillType(targetFillType) then
+        if pickedUpLiters ~= 0 and g_currentMission.MoistureSystem:isHayFillType(targetFillType) then
             for _, cell in pairs(gridCells) do
                 -- Check all grass types for cleanup
                 for grassType, _ in pairs(GroundPropertyTracker.GRASS_CONVERSION_MAP) do
@@ -115,7 +115,7 @@ function MSTedderExtension:processTedderArea(_, workArea, dt)
         if dropArea ~= nil and workArea.litersToDrop > 0 then
             local dropped
 
-            if tracker:isHayFillType(targetFillType) and pickedUpHay == 0 then
+            if g_currentMission.MoistureSystem:isHayFillType(targetFillType) and pickedUpHay == 0 then
                 -- override default hay drop - convert back to appropriate grass type
                 local targetFillTypeName = g_fillTypeManager:getFillTypeNameByIndex(targetFillType)
                 local grassTypeName = nil
