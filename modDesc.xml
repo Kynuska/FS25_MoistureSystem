@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="106">
     <author>Ozz</author>
-    <version>0.0.0.1</version>
+    <version>0.0.0.2</version>
     <iconFilename>icon_MoistureSystem.dds</iconFilename>
     <title>
         <en>Moisture System</en>
@@ -18,6 +18,14 @@ Harvested crops have moisture values that affect their quality grade (A through 
 Features include terrain-based moisture variation, grass tedding and drying mechanics, tracked moisture on dropped crop piles, and configurable environment types (Dry/Normal/Wet). Access detailed crop grade tables and moisture calendars via the in-game menu (Shift+M).
 
 Github: https://github.com/sprkem/FS25_MoistureSystem
+
+Beta Changelog:
+
+0.0.0.2 [WIP]:
+- Add console command "msSetMoisture" for testing (usage: msSetMoisture value[1-100]). Will not violate the months range.
+
+0.0.0.1:
+- Initial release
 
 ]]>
         </en>

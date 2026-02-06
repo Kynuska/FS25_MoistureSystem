@@ -48,10 +48,11 @@ end
 -- Local values: height
 function MoistureSystem:consoleCommandSetMoisture(newMoisture)
     if not g_currentMission:getIsServer() then return end
-    local newMoistureNum = tonumber(newMoisture) / 100
+    local newMoistureNum = tonumber(newMoisture)
     if newMoisture == nil or newMoistureNum == nil then
         return "Usage: msSetMoisture value[1-100]"
     end
+    newMoistureNum = math.max(1, math.min(100, newMoistureNum)) / 100
     g_client:getServerConnection():sendEvent(MoistureUpdateEvent.new(newMoistureNum))
     return string.format("New moisture is %.3f", newMoistureNum)
 end
