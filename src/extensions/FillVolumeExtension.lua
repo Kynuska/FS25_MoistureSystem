@@ -26,6 +26,11 @@ function MSFillVolumeExtension:onFillUnitFillLevelChanged(superFunc, fillUnitInd
         return
     end
 
+    -- Skip if this is a combine - CutterExtension handles that
+    if self.spec_combine ~= nil then
+        return
+    end
+
     if toolType == ToolType.TRIGGER then
         return
     end

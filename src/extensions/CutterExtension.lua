@@ -143,7 +143,6 @@ end
 
 ---
 -- Update combine's moisture based on harvested crop
--- Uses volume-weighted averaging when combining with existing moisture
 -- @param combineVehicle: The combine vehicle
 -- @param newLiters: Amount of crop picked up
 -- @param newMoisture: Moisture level of picked up crop (0-1 scale)
@@ -170,16 +169,19 @@ function MSCutterExtension.updateCombineMoisture(combineVehicle, newLiters, newM
         return
     end
 
-    local currentLiters = combineVehicle:getFillUnitFillLevel(spec.fillUnitIndex)
+    local totalFillLevel = combineVehicle:getFillUnitFillLevel(spec.fillUnitIndex)
+    local currentLiters = totalFillLevel - newLiters
     local currentMoisture = moistureSystem:getObjectMoisture(uniqueId, fillType)
 
-    if currentMoisture == nil or currentLiters <= 0 then
-        -- First harvest or empty tank - use source moisture
+    if currentMoisture == nil or currentLiters <= 0.001 then
+        -- First harvest or empty tank - use source moisture directly
         moistureSystem:setObjectMoisture(uniqueId, fillType, newMoisture)
     else
-        -- Volume-weighted average: (currentLiters * currentMoisture + newLiters * newMoisture) / totalLiters
-        local totalLiters = currentLiters + newLiters
-        local averageMoisture = (currentLiters * currentMoisture + newLiters * newMoisture) / totalLiters
+        -- Volume-weighted average
+        local totalLiters = totalFillLevel
+        local moistureLiters = currentLiters * currentMoisture + newLiters * newMoisture
+        local averageMoisture = moistureLiters / totalLiters
+
         moistureSystem:setObjectMoisture(uniqueId, fillType, averageMoisture)
     end
 end
