@@ -347,6 +347,51 @@ PlayerHUDUpdater.showPalletInfo = Utils.appendedFunction(PlayerHUDUpdater.showPa
     MSPlayerHUDExtension.showPalletInfo)
 
 ---
+-- Show rain exposure for bales being looked at
+-- Appended to PlayerHUDUpdater.showBaleInfo
+---
+function MSPlayerHUDExtension:showBaleInfo(bale)
+    if bale == nil or bale.uniqueId == nil then
+        return
+    end
+
+    local box = self.objectBox
+    if box == nil then
+        return
+    end
+
+    -- Show rain exposure time and status if tracked
+    local baleRottingSystem = g_currentMission.baleRottingSystem
+    if baleRottingSystem ~= nil then
+        local baleData = baleRottingSystem.baleRainExposureTimes[bale.uniqueId]
+        if baleData ~= nil and baleData.exposure > 0 then
+            local exposureMinutes = math.floor(baleData.exposure / 60000)
+            box:addLine(
+                g_i18n:getText("moistureSystem_rainExposure"),
+                string.format("%d min", exposureMinutes)
+            )
+            
+            -- Show status (pre-computed in update loop)
+            local statusTextMap = {
+                getting_wet = "moistureSystem_baleGettingWet",
+                rotting = "moistureSystem_baleRotting",
+                drying = "moistureSystem_baleDrying"
+            }
+            
+            if baleData.status and statusTextMap[baleData.status] then
+                box:addLine(
+                    g_i18n:getText("moistureSystem_baleStatus"),
+                    g_i18n:getText(statusTextMap[baleData.status])
+                )
+            end
+        end
+    end
+end
+
+PlayerHUDUpdater.showBaleInfo = Utils.appendedFunction(PlayerHUDUpdater.showBaleInfo,
+    MSPlayerHUDExtension.showBaleInfo)
+
+---
 -- Clean up boxes on delete
 -- Appended to PlayerHUDUpdater.delete
 ---

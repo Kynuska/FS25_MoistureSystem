@@ -17,6 +17,14 @@
 		<text name="setting_moisture_moistureGainMultiplier_tooltip" text="Controls the speed of moisture gain from rain (1-10)"/>
 		<text name="setting_moisture_teddingMoistureReduction" text="Tedding Moisture Reduction"/>
 		<text name="setting_moisture_teddingMoistureReduction_tooltip" text="Amount of moisture reduced per tedding pass (1-5%)"/>
+		<text name="setting_moisture_baleRotEnabled" text="Bale Rotting"/>
+		<text name="setting_moisture_baleRotEnabled_tooltip" text="Enable bale rotting during rain/snow. Wrapped bales and bales under shelter are protected."/>
+		<text name="setting_moisture_baleRotRate" text="Bale Rot Rate"/>
+		<text name="setting_moisture_baleRotRate_tooltip" text="Multiplier for bale volume loss rate. Higher values mean faster rotting."/>
+		<text name="setting_moisture_baleGracePeriod" text="Bale Grace Period"/>
+		<text name="setting_moisture_baleGracePeriod_tooltip" text="Amount of rain exposure before rotting begins. Bales slowly dry when rain stops."/>
+		<text name="setting_moisture_baleExposureDecayRate" text="Bale Drying Rate"/>
+		<text name="setting_moisture_baleExposureDecayRate_tooltip" text="How fast bales dry out after rain stops. Lower = slower drying."/>
 		
 		<!-- Multiplayer Permission -->
 		<text name="permission_moisture_moistureSettings" text="Change Moisture Settings"/>
@@ -28,6 +36,11 @@
 		<text name="moistureSystem_fieldInfo" text="Field Moisture"/>
 		<text name="moistureSystem_moisture" text="Moisture"/>
 		<text name="moistureSystem_range" text="Expected Range"/>
+		<text name="moistureSystem_rainExposure" text="Rain Exposure"/>
+		<text name="moistureSystem_baleStatus" text="Status"/>
+		<text name="moistureSystem_baleGettingWet" text="Getting Wet"/>
+		<text name="moistureSystem_baleRotting" text="Rotting"/>
+		<text name="moistureSystem_baleDrying" text="Drying"/>
 		
 		<!-- GUI -->
 		<text name="moistureSystem_gui_cropGradeValues" text="Crop Grade Values"/>

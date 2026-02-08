@@ -5,7 +5,11 @@ MoistureSettings.menuItems = {
     'environment',
     'moistureLossMultiplier',
     'moistureGainMultiplier',
-    'teddingMoistureReduction'
+    'teddingMoistureReduction',
+    'baleRotEnabled',
+    'baleRotRate',
+    'baleGracePeriod',
+    'baleExposureDecayRate'
 }
 
 MoistureSettings.multiplayerPermissions = {
@@ -52,6 +56,41 @@ MoistureSettings.SETTINGS.teddingMoistureReduction = {
     ['permission'] = 'moistureSettings',
     ['values'] = { 0.01, 0.02, 0.03, 0.04, 0.05 },
     ['strings'] = { "1%", "2%", "3%", "4%", "5%" }
+}
+
+MoistureSettings.SETTINGS.baleRotEnabled = {
+    ['default'] = 2, -- Enabled by default
+    ['serverOnly'] = true,
+    ['permission'] = 'moistureSettings',
+    ['values'] = { false, true },
+    ['strings'] = {
+        g_i18n:getText("setting_off"),
+        g_i18n:getText("setting_on")
+    }
+}
+
+MoistureSettings.SETTINGS.baleRotRate = {
+    ['default'] = 3, -- 1.0 multiplier (100%)
+    ['serverOnly'] = true,
+    ['permission'] = 'moistureSettings',
+    ['values'] = { 0.5, 0.75, 1.0, 1.25, 1.5, 2.0 },
+    ['strings'] = { "50%", "75%", "100%", "125%", "150%", "200%" }
+}
+
+MoistureSettings.SETTINGS.baleGracePeriod = {
+    ['default'] = 3, -- 15 minutes
+    ['serverOnly'] = true,
+    ['permission'] = 'moistureSettings',
+    ['values'] = { 5, 10, 15, 30, 60 }, -- minutes
+    ['strings'] = { "5min", "10min", "15min", "30min", "60min" }
+}
+
+MoistureSettings.SETTINGS.baleExposureDecayRate = {
+    ['default'] = 3, -- 1.0 multiplier (40 minutes to dry)
+    ['serverOnly'] = true,
+    ['permission'] = 'moistureSettings',
+    ['values'] = { 0.5, 0.75, 1.0, 1.5, 2.0 }, -- decay rate multipliers
+    ['strings'] = { "80min", "53min", "40min", "27min", "20min" } -- time to dry 15min exposure
 }
 
 function MoistureSettings.getStateIndex(id, value)

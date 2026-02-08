@@ -16,11 +16,18 @@ function MoistureSystem:loadMap()
         environment = MoistureClampEnvironments.NORMAL,
         moistureLossMultiplier = 3.0,
         moistureGainMultiplier = 3.0,
-        teddingMoistureReduction = 0.02
+        teddingMoistureReduction = 0.02,
+        baleRotEnabled = true,
+        baleRotRate = 1.0,
+        baleGracePeriod = 15,
+        baleExposureDecayRate = 1.0
     }
 
     -- Initialize property tracker
     g_currentMission.groundPropertyTracker = GroundPropertyTracker.new()
+
+    -- Initialize bale rotting system
+    g_currentMission.baleRottingSystem = BaleRottingSystem.new()
 
     -- Initialize vehicle/object moisture tracking
     self.objectMoisture = {}
@@ -85,6 +92,11 @@ function MoistureSystem:update(dt)
         self:updateMoistureLevel(self.timeSinceLastUpdate)
         self.timeSinceLastUpdate = 0
     end
+
+    -- Update bale rotting system
+    if g_currentMission.baleRottingSystem then
+        g_currentMission.baleRottingSystem:update(dt)
+    end
 end
 
 ---
@@ -108,7 +120,7 @@ function MoistureSystem:updateMoistureLevel(delta)
 
     -- Gain moisture from rain/snow/hail
     if rainfall > 0 or snowfall > 0 or hailfall > 0 then
-        moistureDelta = (rainfall + snowfall * 0.75 + hailfall * 0.5) * 0.009945 * scaledDelta *
+        moistureDelta = (rainfall + (snowfall * 0.55) + (hailfall * 0.5)) * 0.009945 * scaledDelta *
             self.settings.moistureGainMultiplier
         self:adjustMoisture(moistureDelta)
         return
@@ -550,8 +562,32 @@ function MoistureSystem:loadFromXMLFile()
             self.settings.teddingMoistureReduction = teddingReduction
         end
 
+        local baleRotEnabled = getXMLBool(xmlFile, MoistureSystem.SaveKey .. ".settings#baleRotEnabled")
+        if baleRotEnabled ~= nil then
+            self.settings.baleRotEnabled = baleRotEnabled
+        end
+
+        local baleRotRate = getXMLFloat(xmlFile, MoistureSystem.SaveKey .. ".settings#baleRotRate")
+        if baleRotRate then
+            self.settings.baleRotRate = baleRotRate
+        end
+
+        local baleGracePeriod = getXMLInt(xmlFile, MoistureSystem.SaveKey .. ".settings#baleGracePeriod")
+        if baleGracePeriod then
+            self.settings.baleGracePeriod = baleGracePeriod
+        end
+
+        local baleExposureDecayRate = getXMLFloat(xmlFile, MoistureSystem.SaveKey .. ".settings#baleExposureDecayRate")
+        if baleExposureDecayRate then
+            self.settings.baleExposureDecayRate = baleExposureDecayRate
+        end
+
         if g_currentMission.groundPropertyTracker then
             g_currentMission.groundPropertyTracker:loadFromXMLFile(xmlFile, MoistureSystem.SaveKey)
+        end
+
+        if g_currentMission.baleRottingSystem then
+            g_currentMission.baleRottingSystem:loadFromXMLFile(xmlFile, MoistureSystem.SaveKey)
         end
 
         -- Load object moisture data
@@ -621,9 +657,17 @@ function MoistureSystem:saveToXmlFile()
         .moistureGainMultiplier)
     setXMLFloat(xmlFile, MoistureSystem.SaveKey .. ".settings#teddingMoistureReduction", ms.settings
         .teddingMoistureReduction)
+    setXMLBool(xmlFile, MoistureSystem.SaveKey .. ".settings#baleRotEnabled", ms.settings.baleRotEnabled)
+    setXMLFloat(xmlFile, MoistureSystem.SaveKey .. ".settings#baleRotRate", ms.settings.baleRotRate)
+    setXMLInt(xmlFile, MoistureSystem.SaveKey .. ".settings#baleGracePeriod", ms.settings.baleGracePeriod)
+    setXMLFloat(xmlFile, MoistureSystem.SaveKey .. ".settings#baleExposureDecayRate", ms.settings.baleExposureDecayRate)
 
     if g_currentMission.groundPropertyTracker then
         g_currentMission.groundPropertyTracker:saveToXMLFile(xmlFile, MoistureSystem.SaveKey)
+    end
+
+    if g_currentMission.baleRottingSystem then
+        g_currentMission.baleRottingSystem:saveToXMLFile(xmlFile, MoistureSystem.SaveKey)
     end
 
     -- Save object moisture data
