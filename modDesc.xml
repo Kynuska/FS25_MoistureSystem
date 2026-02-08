@@ -21,10 +21,11 @@ Github: https://github.com/sprkem/FS25_MoistureSystem
 
 Beta Changelog:
 
-0.0.0.3 [WIP]:
+0.0.0.3:
 - Fix an issue when harvesting different moisture levels and how volume weighting is calculated.
 - Fix issues with forage wagons keeping moisture levels when unloading and loading.
 - Reduce the a delay for processing cells, the goal being that hay conversion happens closer to the implement.
+- When grass is tedded during a contract, base game behavior applies.
 
 0.0.0.2:
 - Add console command "msSetMoisture" for testing (usage: msSetMoisture value[1-100]). Will not violate the months range.
