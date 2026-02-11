@@ -1,0 +1,96 @@
+---
+-- BaleExtension
+-- Hooks into bale fermentation to reduce volume based on moisture content
+---
+
+MSBaleExtension = {}
+
+-- Moisture-based volume reduction tiers (0-1 scale)
+MSBaleExtension.VOLUME_REDUCTION_TIERS = {
+    { maxMoisture = 0.15, reduction = 0.00 }, -- 0-15%: No reduction (optimal)
+    { maxMoisture = 0.18, reduction = 0.02 }, -- 15-18%: 2% reduction
+    { maxMoisture = 0.22, reduction = 0.05 }, -- 18-22%: 5% reduction
+    { maxMoisture = 0.26, reduction = 0.10 }, -- 22-26%: 10% reduction
+    { maxMoisture = 0.30, reduction = 0.15 }, -- 26-30%: 15% reduction
+    { maxMoisture = 1.00, reduction = 0.20 }, -- 30%+: 20% reduction
+}
+
+---
+-- Get the volume reduction percentage for a given moisture level
+-- @param moisture: Moisture level (0-1 scale)
+-- @return reduction percentage (0-1 scale)
+---
+function MSBaleExtension.getVolumeReduction(moisture)
+    for _, tier in ipairs(MSBaleExtension.VOLUME_REDUCTION_TIERS) do
+        if moisture <= tier.maxMoisture then
+            return tier.reduction
+        end
+    end
+
+    -- Default to maximum reduction if somehow exceeded
+    return 0.20
+end
+
+---
+-- Extended to adjust bale volume based on moisture after fermentation
+-- @param superFunc: Original function
+---
+function MSBaleExtension:onFermentationEnd(superFunc)
+    local originalFillType = self.fillType
+    local originalFillLevel = self.fillLevel
+
+    superFunc(self)
+
+    if not self.isServer then
+        return
+    end
+
+    local moistureSystem = g_currentMission.MoistureSystem
+
+    -- Get the moisture that was stored when bale was created
+    -- Note: Check both original and new fillType in case moisture was stored under either
+    local baleMoisture = moistureSystem:getObjectMoisture(self.uniqueId, originalFillType)
+    if baleMoisture == nil then
+        baleMoisture = moistureSystem:getObjectMoisture(self.uniqueId, self.fillType)
+    end
+
+    if baleMoisture == nil then
+        return
+    end
+
+    local reductionPercent = MSBaleExtension.getVolumeReduction(baleMoisture)
+
+    if reductionPercent > 0 then
+        local newFillLevel = originalFillLevel * (1.0 - reductionPercent)
+        self:setFillLevel(newFillLevel)
+    end
+
+    if originalFillType ~= self.fillType then
+        moistureSystem:setObjectMoisture(self.uniqueId, originalFillType, nil)
+    end
+end
+
+---
+-- Extended to clean up moisture tracking when bale is deleted
+-- @param superFunc: Original function
+---
+function MSBaleExtension:delete(superFunc)
+    if self.isServer then
+        local moistureSystem = g_currentMission.MoistureSystem
+        if moistureSystem and self.uniqueId then
+            moistureSystem:setObjectMoisture(self.uniqueId, self.fillType, nil)
+        end
+    end
+
+    superFunc(self)
+end
+
+Bale.onFermentationEnd = Utils.overwrittenFunction(
+    Bale.onFermentationEnd,
+    MSBaleExtension.onFermentationEnd
+)
+
+Bale.delete = Utils.overwrittenFunction(
+    Bale.delete,
+    MSBaleExtension.delete
+)

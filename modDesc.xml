@@ -22,7 +22,10 @@ Github: https://github.com/sprkem/FS25_MoistureSystem
 Beta Changelog:
 
 0.0.0.5:
-- Grass on the ground over 15% moisture will rot away
+- Wrapped grass bales will track moisture % on the bale (you can see this in the info hud). When the bale is done fermenting, volume will be reduced based on moisture thresholds.
+- Straw that is baled will track moisture on the baler (you can see this in the info hud). The output bale will have rain exposure % applied if over certain thresholds.
+- Hay will revert to grass if moisture goes about he 7% threshold.
+- Grass and straw on the ground over 15% moisture will rot away
 - Fix logic issue where grass pile moisture wasn't increasing in the rain
 
 0.0.0.4:
@@ -68,6 +71,7 @@ Beta Changelog:
         <sourceFile filename="src/extensions/CombineExtension.lua"/>
         <sourceFile filename="src/extensions/ForageWagonExtension.lua"/>
         <sourceFile filename="src/extensions/BalerExtension.lua"/>
+        <sourceFile filename="src/extensions/BaleExtension.lua"/>
         <sourceFile filename="src/extensions/FillVolumeExtension.lua"/>
         <sourceFile filename="src/extensions/MowerExtension.lua"/>
         <sourceFile filename="src/extensions/TedderExtension.lua"/>

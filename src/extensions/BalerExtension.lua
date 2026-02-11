@@ -163,6 +163,11 @@ function MSBalerExtension:createBale(superFunc, baleFillType, fillLevel, baleSer
     local vehicleMoisture = moistureSystem:getObjectMoisture(self.uniqueId, baleFillType)
 
     if vehicleMoisture ~= nil and bale.uniqueId then
+        -- Store moisture on the bale object for later use during fermentation (grass types only)
+        if moistureSystem:isGrassOnGroundFillType(baleFillType) then
+            moistureSystem:setObjectMoisture(bale.uniqueId, baleFillType, vehicleMoisture)
+        end
+        
         local initialExposure = 0
 
         if vehicleMoisture >= 0.25 then
