@@ -102,8 +102,48 @@ function MSForageWagonExtension:onEndWorkAreaProcessing(superFunc, dt, hasProces
     return result
 end
 
+---
+-- Extended to cleanup moisture tracking when fillUnit is emptied
+-- @param superFunc: Original function
+-- @param fillUnitIndex: Fill unit index
+-- @param fillLevelDelta: Amount of fill level change
+-- @param fillTypeIndex: Fill type index
+-- @param toolType: Tool type
+-- @param fillPositionData: Fill position data
+-- @param appliedDelta: Applied delta
+---
+function MSForageWagonExtension:onFillUnitFillLevelChanged(superFunc, fillUnitIndex, fillLevelDelta, fillTypeIndex, toolType, fillPositionData, appliedDelta)
+    -- Call original
+    if superFunc ~= nil then
+        superFunc(self, fillUnitIndex, fillLevelDelta, fillTypeIndex, toolType, fillPositionData, appliedDelta)
+    end
+    
+    if not self.isServer then
+        return
+    end
+    
+    local spec = self.spec_forageWagon
+    if spec == nil or fillUnitIndex ~= spec.fillUnitIndex then
+        return
+    end
+    
+    -- Clear moisture when tank is emptied
+    local fillLevel = self:getFillUnitFillLevel(fillUnitIndex)
+    if fillLevel <= 0.001 then
+        local moistureSystem = g_currentMission.MoistureSystem
+        if moistureSystem then
+            moistureSystem:setObjectMoisture(self.uniqueId, fillTypeIndex, nil)
+        end
+    end
+end
+
 -- Hook into ForageWagon specialization
 ForageWagon.onEndWorkAreaProcessing = Utils.overwrittenFunction(
     ForageWagon.onEndWorkAreaProcessing,
     MSForageWagonExtension.onEndWorkAreaProcessing
+)
+
+ForageWagon.onFillUnitFillLevelChanged = Utils.overwrittenFunction(
+    ForageWagon.onFillUnitFillLevelChanged,
+    MSForageWagonExtension.onFillUnitFillLevelChanged
 )

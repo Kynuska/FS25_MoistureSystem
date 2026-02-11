@@ -18,16 +18,16 @@ BaleRottingSystem.BALE_STATUS = {
 }
 
 -- Rot rate tiers based on peak exposure
-BaleRottingSystem.SLOW_ROT_RATE = 0.00005 -- Slow volume loss per timescale unit
+BaleRottingSystem.SLOW_ROT_RATE = 0.00005  -- Slow volume loss per timescale unit
 BaleRottingSystem.NORMAL_ROT_RATE = 0.0001 -- Normal volume loss per timescale unit
-BaleRottingSystem.FAST_ROT_RATE = 0.0002 -- Fast volume loss per timescale unit
+BaleRottingSystem.FAST_ROT_RATE = 0.0002   -- Fast volume loss per timescale unit
 
 -- Thresholds for rot tiers (based on peak exposure time)
-BaleRottingSystem.SLOW_ROT_THRESHOLD = 20 * 60 * 1000 -- 20 minutes - rotting begins
-BaleRottingSystem.NORMAL_ROT_THRESHOLD = 40 * 60 * 1000 -- 40 minutes
-BaleRottingSystem.FAST_ROT_THRESHOLD = 60 * 60 * 1000 -- 60 minutes
+BaleRottingSystem.SLOW_ROT_THRESHOLD = 30 * 60 * 1000   -- 30 minutes
+BaleRottingSystem.NORMAL_ROT_THRESHOLD = 50 * 60 * 1000 -- 50 minutes
+BaleRottingSystem.FAST_ROT_THRESHOLD = 70 * 60 * 1000   -- 70 minutes
 
-BaleRottingSystem.DECAY_RATE = 0.375 -- Decay rate when dry (20min exposure / 53min = 0.375)
+BaleRottingSystem.DECAY_RATE = 0.375                    -- Decay rate when dry (20min exposure / 53min = 0.375)
 
 ---
 -- Create new BaleRottingSystem instance
@@ -35,20 +35,20 @@ BaleRottingSystem.DECAY_RATE = 0.375 -- Decay rate when dry (20min exposure / 53
 ---
 function BaleRottingSystem.new()
     local self = setmetatable({}, BaleRottingSystem_mt)
-    
+
     self.mission = g_currentMission
     self.isServer = self.mission:getIsServer()
-    
+
     -- Track accumulated rain exposure time, peak exposure, and status
     -- { [uniqueId] = { exposure = timeMS, peakExposure = timeMS, status = BALE_STATUS constant } }
     -- exposure increments during rain, decrements slowly when dry
     -- peakExposure tracks highest exposure ever reached (determines rot rate tier)
     -- Persisted in save game (exposure and peakExposure, status computed on update)
     self.baleRainExposureTimes = {}
-    
+
     -- Track last update time
     self.timeSinceLastUpdate = 0
-    
+
     return self
 end
 
@@ -62,11 +62,11 @@ end
 ---
 function BaleRottingSystem:updateBaleExposure(uniqueId, timescaledDt, isExposedToRain, sunDryingMultiplier)
     if not self.isServer then return 0, nil, 0 end
-    
+
     local baleData = self.baleRainExposureTimes[uniqueId]
     local currentExposure = baleData and baleData.exposure or 0
     local peakExposure = baleData and baleData.peakExposure or 0
-    
+
     if isExposedToRain then
         -- Accumulate exposure during rain (cap at 2x fast rot threshold)
         currentExposure = math.min(currentExposure + timescaledDt, self.FAST_ROT_THRESHOLD * 2)
@@ -84,7 +84,7 @@ function BaleRottingSystem:updateBaleExposure(uniqueId, timescaledDt, isExposedT
         end
         -- If already rotting (>= slow rot threshold), exposure stays at current level
     end
-    
+
     -- Determine status based on current state and peak exposure
     local status = nil
     if currentExposure > 0 then
@@ -107,7 +107,7 @@ function BaleRottingSystem:updateBaleExposure(uniqueId, timescaledDt, isExposedT
             end
         end
     end
-    
+
     -- Store or remove tracking
     if currentExposure > 0 then
         self.baleRainExposureTimes[uniqueId] = {
@@ -118,8 +118,30 @@ function BaleRottingSystem:updateBaleExposure(uniqueId, timescaledDt, isExposedT
     else
         self.baleRainExposureTimes[uniqueId] = nil
     end
-    
+
     return currentExposure, status, peakExposure
+end
+
+---
+-- Set initial exposure time for a newly created bale
+-- Used when bales are created with high moisture content
+-- @param uniqueId: Bale unique ID
+-- @param exposureTime: Initial exposure time in milliseconds
+---
+function BaleRottingSystem:setBaleInitialExposure(uniqueId, exposureTime)
+    if not self.isServer then return end
+
+    if self.baleRainExposureTimes[uniqueId] then
+        return
+    end
+
+    local cappedExposure = math.min(exposureTime, self.SLOW_ROT_THRESHOLD * 0.99)
+
+    self.baleRainExposureTimes[uniqueId] = {
+        exposure = cappedExposure,
+        peakExposure = cappedExposure,
+        status = self.BALE_STATUS.GETTING_WET
+    }
 end
 
 ---
@@ -128,39 +150,39 @@ end
 ---
 function BaleRottingSystem:update(dt)
     if not self.isServer then return end
-    
+
     -- Check if bale rotting is enabled
     if not g_currentMission.MoistureSystem.settings.baleRotEnabled then
         return
     end
-    
+
     self.timeSinceLastUpdate = self.timeSinceLastUpdate + dt
     if self.timeSinceLastUpdate < self.UPDATE_INTERVAL_MS then
         return
     end
-    
+
     -- Use accumulated time, not just last frame's dt
     local timescale = self.timeSinceLastUpdate * self.mission:getEffectiveTimeScale()
     local weather = self.mission.environment.weather
     local rainfall = weather:getRainFallScale()
     local snowfall = weather:getSnowFallScale()
     local hailfall = weather:getHailFallScale()
-    
+
     local isRaining = rainfall > 0 or snowfall > 0 or hailfall > 0
     local indoorMask = self.mission.indoorMask
     local items = self.mission.itemSystem.itemByUniqueId
     local balesToDelete = {}
-    
+
     -- Calculate sunshine drying bonus (up to 25% faster drying during daylight)
     local currentHour = self.mission.environment.currentHour
     local daylightStart = 6
     local daylightEnd = 20
     local isDaylight = currentHour >= daylightStart and currentHour < daylightEnd
-    
+
     -- Process ALL tracked bales (even when not raining, for decay)
     -- Plus any rottable bales we encounter
     local balesToProcess = {}
-    
+
     -- Add all currently tracked bales
     for uniqueId, _ in pairs(self.baleRainExposureTimes) do
         if items[uniqueId] then
@@ -170,7 +192,7 @@ function BaleRottingSystem:update(dt)
             self.baleRainExposureTimes[uniqueId] = nil
         end
     end
-    
+
     -- Add any untracked rottable bales (if it's raining)
     if isRaining then
         for uniqueId, item in pairs(items) do
@@ -179,44 +201,45 @@ function BaleRottingSystem:update(dt)
             end
         end
     end
-    
+
     -- Process each bale
     for uniqueId, item in pairs(balesToProcess) do
         local x, _, z = getWorldTranslation(item.nodeId)
-        
+
         -- Check if exposed to rain (outdoors, unwrapped, raining)
         local isIndoors = indoorMask:getIsIndoorAtWorldPosition(x, z)
         local isExposedToRain = isRaining and not isIndoors
-        
+
         -- Calculate sun drying multiplier (1.0 to 1.25)
         -- Only apply bonus when: not raining, outdoors, and daylight
         local sunDryingMultiplier = 1.0
         if not isRaining and not isIndoors and isDaylight then
             sunDryingMultiplier = 1.25
         end
-        
+
         -- Update exposure time (accumulate or decay)
-        local exposureTime, status, peakExposure = self:updateBaleExposure(uniqueId, timescale, isExposedToRain, sunDryingMultiplier)
-        
+        local exposureTime, status, peakExposure = self:updateBaleExposure(uniqueId, timescale, isExposedToRain,
+            sunDryingMultiplier)
+
         -- Apply rotting if currently rotting (any tier)
         if status == self.BALE_STATUS.ROTTING_SLOWLY or status == self.BALE_STATUS.ROTTING or status == self.BALE_STATUS.ROTTING_QUICKLY then
             local rotLoss = self:calculateRotLoss(item, rainfall, snowfall, hailfall, timescale, peakExposure)
             item.fillLevel = math.max(item.fillLevel - rotLoss, 0)
-            
+
             -- Mark for deletion if empty
             if item.fillLevel <= 0 then
                 table.insert(balesToDelete, item)
             end
         end
     end
-    
+
     -- Delete empty bales
     for i = #balesToDelete, 1, -1 do
         local bale = balesToDelete[i]
         self.baleRainExposureTimes[bale.uniqueId] = nil
         bale:delete()
     end
-    
+
     self.timeSinceLastUpdate = 0
 end
 
@@ -240,20 +263,20 @@ function BaleRottingSystem:calculateRotLoss(bale, rainfall, snowfall, hailfall, 
     elseif peakExposure >= self.SLOW_ROT_THRESHOLD then
         rotRate = self.SLOW_ROT_RATE
     end
-    
+
     -- Base calculation (aligned with MoistureSystem weather factors)
     local weatherFactor = rainfall + (snowfall * 0.55) + (hailfall * 0.5)
-    
+
     -- If not currently exposed to weather, apply minimal internal decay rate (10% of normal)
     if weatherFactor == 0 then
         weatherFactor = 0.1
     end
-    
+
     local baseLoss = weatherFactor * rotRate * timescale
-    
+
     -- Apply settings multiplier
     local settingsMultiplier = g_currentMission.MoistureSystem.settings.baleRotRate or 1.0
-    
+
     return baseLoss * settingsMultiplier
 end
 
@@ -267,17 +290,17 @@ function BaleRottingSystem:isBaleRottable(item)
     if g_currentMission.objectsToClassName[item] ~= "Bale" then
         return false
     end
-    
+
     -- Must have valid data
     if item.fillLevel == nil or item.nodeId == 0 then
         return false
     end
-    
+
     -- Must be unwrapped
     if item.wrappingState ~= 0 then
         return false
     end
-    
+
     local rottableFillTypes = {
         [FillType.SILAGE] = true,
     }
@@ -289,31 +312,15 @@ function BaleRottingSystem:isBaleRottable(item)
     local converter = g_fillTypeManager:getConverterDataByName("TEDDER")
     for fromFillType, to in pairs(converter) do
         local targetFillType = to.targetFillTypeIndex
-        if fromFillType == targetFillType then
-            continue
-        end
-
-        if item.fillType == targetFillType or item.fillType == fromFillType then
-            return true
+        -- Skip non-converting entries (where source and target are the same)
+        if fromFillType ~= targetFillType then
+            if item.fillType == targetFillType or item.fillType == fromFillType then
+                return true
+            end
         end
     end
 
     return false
-    
-    -- -- Add all grass types (keys) and hay types (values) from conversion map
-    -- for grassTypeName, hayTypeName in pairs(GroundPropertyTracker.GRASS_CONVERSION_MAP) do
-    --     local grassFillType = g_fillTypeManager:getFillTypeIndexByName(grassTypeName)
-    --     local hayFillType = g_fillTypeManager:getFillTypeIndexByName(hayTypeName)
-        
-    --     if grassFillType then
-    --         rottableFillTypes[grassFillType] = true
-    --     end
-    --     if hayFillType then
-    --         rottableFillTypes[hayFillType] = true
-    --     end
-    -- end
-    
-    -- return rottableFillTypes[item.fillType] or false
 end
 
 ---
@@ -332,7 +339,7 @@ end
 ---
 function BaleRottingSystem:saveToXMLFile(xmlFile, key)
     if not self.isServer then return end
-    
+
     local i = 0
     for uniqueId, baleData in pairs(self.baleRainExposureTimes) do
         -- Only save if bale still exists
@@ -353,29 +360,29 @@ end
 ---
 function BaleRottingSystem:loadFromXMLFile(xmlFile, key)
     if not self.isServer then return end
-    
+
     local i = 0
     while true do
         local baleKey = string.format("%s.baleRotting.bale(%d)", key, i)
-        
+
         if not hasXMLProperty(xmlFile, baleKey) then
             break
         end
-        
+
         local uniqueId = getXMLInt(xmlFile, baleKey .. "#uniqueId")
         local exposureTime = getXMLInt(xmlFile, baleKey .. "#exposureTime")
         local peakExposure = getXMLInt(xmlFile, baleKey .. "#peakExposure") or exposureTime
-        
+
         -- Only restore if bale still exists
         if g_currentMission.itemSystem.itemByUniqueId[uniqueId] then
             -- Status will be computed on first update
             self.baleRainExposureTimes[uniqueId] = {
                 exposure = exposureTime,
                 peakExposure = peakExposure,
-                status = self.BALE_STATUS.DRYING  -- Default status until next update
+                status = self.BALE_STATUS.DRYING -- Default status until next update
             }
         end
-        
+
         i = i + 1
     end
 end
