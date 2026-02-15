@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="105">
     <author>Ozz</author>
-    <version>0.0.0.6</version>
+    <version>0.0.0.7</version>
     <iconFilename>icon_MoistureSystem.dds</iconFilename>
     <title>
         <en>Moisture System</en>
@@ -21,8 +21,9 @@ Github: https://github.com/sprkem/FS25_MoistureSystem
 
 Beta Changelog:
 
-0.0.0.7 [WIP]:
-
+0.0.0.7:
+- Add a moisture meter hand tool for measuring ground moisture levels in the field. You can no longer see ground moisture in the HUD.
+- Rotting bales in storage will continue to rot.
 - Reworked ground material rotting to be based on rain exposure.
 
 0.0.0.6:
