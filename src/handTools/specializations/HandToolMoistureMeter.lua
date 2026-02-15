@@ -30,7 +30,7 @@ function HandToolMoistureMeter.registerEventListeners(handTool)
     SpecializationUtil.registerEventListener(handTool, "onPostLoad", HandToolMoistureMeter)
     SpecializationUtil.registerEventListener(handTool, "onDelete", HandToolMoistureMeter)
     SpecializationUtil.registerEventListener(handTool, "onUpdate", HandToolMoistureMeter)
-    SpecializationUtil.registerEventListener(handTool, "onDraw", HandToolMoistureMeter)
+    -- SpecializationUtil.registerEventListener(handTool, "onDraw", HandToolMoistureMeter)
     SpecializationUtil.registerEventListener(handTool, "onHeldStart", HandToolMoistureMeter)
     SpecializationUtil.registerEventListener(handTool, "onHeldEnd", HandToolMoistureMeter)
     SpecializationUtil.registerEventListener(handTool, "onRegisterActionEvents", HandToolMoistureMeter)
@@ -46,21 +46,24 @@ end
 function HandToolMoistureMeter:onPostLoad(savegame)
     local spec = self[specName]
 
-    if self.isClient then
-        spec.defaultCrosshair = self:createCrosshairOverlay("gui.crosshairDefault")
-        
-        -- Load sounds
-        spec.samples = {}
-        spec.samples.start = g_soundManager:loadSampleFromXML(self.xmlFile, "handTool.moistureMeter.sounds", "start", self.baseDirectory, self.components, 1, AudioGroup.VEHICLE, self.i3dMappings, self)
-        spec.samples.cancel = g_soundManager:loadSampleFromXML(self.xmlFile, "handTool.moistureMeter.sounds", "cancel", self.baseDirectory, self.components, 1, AudioGroup.VEHICLE, self.i3dMappings, self)
-        spec.samples.complete = g_soundManager:loadSampleFromXML(self.xmlFile, "handTool.moistureMeter.sounds", "complete", self.baseDirectory, self.components, 1, AudioGroup.VEHICLE, self.i3dMappings, self)
-    end
+    -- if self.isClient then
+    --     -- spec.defaultCrosshair = self:createCrosshairOverlay("gui.crosshairDefault")
 
-    spec.activateText = g_i18n:getText("moistureSystem_measureLocation")
-    spec.isActive = false
-    spec.isHolding = false
-    spec.holdStartTime = 0
-    spec.holdDuration = 4000  -- 4 seconds in milliseconds
+    --     -- Load sounds
+    --     spec.samples = {}
+    --     spec.samples.start = g_soundManager:loadSampleFromXML(self.xmlFile, "handTool.moistureMeter.sounds", "start",
+    --         self.baseDirectory, self.components, 1, AudioGroup.VEHICLE, self.i3dMappings, self)
+    --     spec.samples.cancel = g_soundManager:loadSampleFromXML(self.xmlFile, "handTool.moistureMeter.sounds", "cancel",
+    --         self.baseDirectory, self.components, 1, AudioGroup.VEHICLE, self.i3dMappings, self)
+    --     spec.samples.complete = g_soundManager:loadSampleFromXML(self.xmlFile, "handTool.moistureMeter.sounds",
+    --         "complete", self.baseDirectory, self.components, 1, AudioGroup.VEHICLE, self.i3dMappings, self)
+    -- end
+
+    -- spec.activateText = g_i18n:getText("moistureSystem_measureLocation")
+    -- spec.isActive = false
+    -- spec.isHolding = false
+    -- spec.holdStartTime = 0
+    -- spec.holdDuration = 4000 -- 4 seconds in milliseconds
 
     print("[MoistureSystem] Moisture meter initialized")
 end
@@ -69,14 +72,14 @@ end
 function HandToolMoistureMeter:onDelete()
     local spec = self[specName]
 
-    if spec.defaultCrosshair ~= nil then
-        spec.defaultCrosshair:delete()
-        spec.defaultCrosshair = nil
-    end
-    
-    if spec.samples ~= nil then
-        g_soundManager:deleteSamples(spec.samples)
-    end
+    -- if spec.defaultCrosshair ~= nil then
+    --     spec.defaultCrosshair:delete()
+    --     spec.defaultCrosshair = nil
+    -- end
+
+    -- if spec.samples ~= nil then
+    --     g_soundManager:deleteSamples(spec.samples)
+    -- end
 end
 
 ---Called when player picks up the tool
@@ -124,14 +127,14 @@ end
 function HandToolMoistureMeter:onActionCallback(actionName, inputValue)
     local spec = self[specName]
     local isPressed = inputValue > 0
-    
+
     if isPressed then
         -- Button pressed - start holding
         if not spec.isHolding then
             spec.isHolding = true
             spec.holdStartTime = g_currentMission.time
             print("[MoistureSystem] Measurement started - hold button for 4 seconds...")
-            
+
             -- Play start sound
             if self.isClient and spec.samples ~= nil and spec.samples.start ~= nil then
                 g_soundManager:playSample(spec.samples.start)
@@ -143,7 +146,7 @@ function HandToolMoistureMeter:onActionCallback(actionName, inputValue)
             local elapsedTime = g_currentMission.time - spec.holdStartTime
             if elapsedTime < spec.holdDuration then
                 print("[MoistureSystem] Measurement cancelled - button released")
-                
+
                 -- Play cancel sound
                 if self.isClient and spec.samples ~= nil and spec.samples.cancel ~= nil then
                     g_soundManager:playSample(spec.samples.cancel)
@@ -157,19 +160,19 @@ end
 ---Update function - check hold duration
 function HandToolMoistureMeter:onUpdate(dt)
     local spec = self[specName]
-    
+
     if spec.isHolding then
         -- Check if hold duration reached
         local elapsedTime = g_currentMission.time - spec.holdStartTime
         if elapsedTime >= spec.holdDuration then
             -- Perform measurement
             spec.isHolding = false
-            
+
             -- Play complete sound
             if self.isClient and spec.samples ~= nil and spec.samples.complete ~= nil then
                 g_soundManager:playSample(spec.samples.complete)
             end
-            
+
             self:performMeasurement()
         end
     end
@@ -182,35 +185,16 @@ function HandToolMoistureMeter:performMeasurement()
 
     -- Get player position
     local x, y, z = getWorldTranslation(player.rootNode)
+    local moisture = g_currentMission.MoistureSystem:getMoistureAtPosition(x, z)
 
-    -- Print location
-    print(string.format("[MoistureSystem] ========== MEASUREMENT =========="))
-    print(string.format("[MoistureSystem] Player Location: X=%.2f, Y=%.2f, Z=%.2f", x, y, z))
-
-    -- Get terrain height
-    local terrainHeight = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 0, z)
-    print(string.format("[MoistureSystem] Terrain Height: %.2f", terrainHeight))
-
-    -- Get moisture at position (if MoistureSystem available)
-    if g_currentMission.MoistureSystem then
-        local moisture = g_currentMission.MoistureSystem:getMoistureAtPosition(x, z)
-        print(string.format("[MoistureSystem] Field Moisture: %.2f%%", moisture * 100))
-
-        -- Get system moisture info
-        local system = g_currentMission.MoistureSystem
-        print(string.format("[MoistureSystem] Current System Moisture: %.2f%%", system.currentMoisturePercent * 100))
-    else
-        print("[MoistureSystem] MoistureSystem not available")
-    end
-
-    print(string.format("[MoistureSystem] ==================================="))
+    g_currentMission:showBlinkingWarning(string.format("[MoistureSystem] Field Moisture: %.2f%%", moisture * 100), 3000)
 end
 
 ---Draw UI overlay
-function HandToolMoistureMeter:onDraw()
-    local spec = self[specName]
+-- function HandToolMoistureMeter:onDraw()
+--     local spec = self[specName]
 
-    if spec.defaultCrosshair then
-        spec.defaultCrosshair:render()
-    end
-end
+--     if spec.defaultCrosshair then
+--         spec.defaultCrosshair:render()
+--     end
+-- end
