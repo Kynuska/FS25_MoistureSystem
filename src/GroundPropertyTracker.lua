@@ -10,17 +10,13 @@ GroundPropertyTracker.DRY_THRESHOLD = 0.07      -- 7% moisture converts grass to
 GroundPropertyTracker.TEDDED_COOLDOWN_CYCLES = 10
 GroundPropertyTracker.DELAYED_PROCESSING_CYCLES = 2
 
--- Grass rotting system constants
-GroundPropertyTracker.ROT_MOISTURE_THRESHOLD = 0.15 -- 15% moisture starts rotting
-GroundPropertyTracker.ROT_REMOVAL_THRESHOLD = 10.0  -- Remove 10 liters when threshold reached
-GroundPropertyTracker.ROT_ACCUMULATION_MIN = 0.1    -- Minimum liters per update cycle
-GroundPropertyTracker.ROT_ACCUMULATION_MAX = 0.3    -- Maximum liters per update cycle
-
--- GroundPropertyTracker.GRASS_CONVERSION_MAP = {
---     ["GRASS_WINDROW"] = "DRYGRASS_WINDROW",
---     ["ALFALFA_WINDROW"] = "DRYALFALFA_WINDROW",
---     ["CLOVER_WINDROW"] = "DRYCLOVER_WINDROW"
--- }
+-- Rain exposure rotting system constants (similar to BaleRottingSystem)
+GroundPropertyTracker.SLOW_ROT_EXPOSURE_TIME = 30 * 60 * 1000   -- 30 minutes in milliseconds
+GroundPropertyTracker.NORMAL_ROT_EXPOSURE_TIME = 50 * 60 * 1000 -- 50 minutes in milliseconds
+GroundPropertyTracker.DRYING_DECAY_RATE = 0.375                 -- Decay rate when dry
+GroundPropertyTracker.ROT_REMOVAL_THRESHOLD = 10.0              -- Remove 10 liters when threshold reached
+GroundPropertyTracker.ROT_ACCUMULATION_MIN = 0.2                -- Minimum liters per update cycle
+GroundPropertyTracker.ROT_ACCUMULATION_MAX = 0.5                -- Maximum liters per update cycle
 
 function GroundPropertyTracker.new()
     local self = setmetatable({}, GroundPropertyTracker_mt)
@@ -481,8 +477,9 @@ end
 ---
 -- Update moisture levels for all grass piles
 -- @param moistureDelta: Amount to change moisture (can be positive or negative)
+-- @param dt: Delta time in milliseconds since last update
 ---
-function GroundPropertyTracker:updateGrassMoisture(moistureDelta)
+function GroundPropertyTracker:updateGrassMoisture(moistureDelta, dt)
     if not self.isServer then return end
     if moistureDelta == 0 then return end
 
@@ -643,20 +640,62 @@ function GroundPropertyTracker:updateGrassMoisture(moistureDelta)
         end
     end
 
-    -- Process grass rotting (wet grass gradually decays)
+    -- Update rain exposure and process grass rotting
+    local weather = g_currentMission.environment.weather
+    local isRaining = weather:getRainFallScale() > 0.1
+    local updateDelta = dt * g_currentMission:getEffectiveTimeScale()
+
     for key, pile in pairs(self.grassPiles) do
-        if pile.properties.moisture and pile.properties.moisture > GroundPropertyTracker.ROT_MOISTURE_THRESHOLD then
+        -- Initialize exposure tracking if needed
+        if not pile.properties.rainExposure then
+            pile.properties.rainExposure = 0
+        end
+        if not pile.properties.peakRainExposure then
+            pile.properties.peakRainExposure = 0
+        end
+
+        -- Update rain exposure
+        if isRaining then
+            pile.properties.rainExposure = pile.properties.rainExposure + updateDelta
+            -- Track peak exposure
+            if pile.properties.rainExposure > pile.properties.peakRainExposure then
+                pile.properties.peakRainExposure = pile.properties.rainExposure
+            end
+        else
+            -- Drying: exposure decrements slowly
+            pile.properties.rainExposure = math.max(0, pile.properties.rainExposure - (updateDelta * GroundPropertyTracker.DRYING_DECAY_RATE))
+            
+            -- If we've dried below slow rot threshold and haven't started rotting, reset peak
+            if pile.properties.rainExposure < GroundPropertyTracker.SLOW_ROT_EXPOSURE_TIME and
+               pile.properties.peakRainExposure < GroundPropertyTracker.SLOW_ROT_EXPOSURE_TIME then
+                pile.properties.peakRainExposure = pile.properties.rainExposure
+            end
+        end
+
+        -- Determine rot level based on peak exposure
+        local rotLevel = 0  -- 0 = none, 1 = slow, 2 = normal
+        if pile.properties.peakRainExposure >= GroundPropertyTracker.NORMAL_ROT_EXPOSURE_TIME then
+            rotLevel = 2
+        elseif pile.properties.peakRainExposure >= GroundPropertyTracker.SLOW_ROT_EXPOSURE_TIME then
+            rotLevel = 1
+        end
+
+        -- Apply rot if threshold reached
+        if rotLevel > 0 then
             -- Initialize accumulator if not exists
             if not self.grassRotAccumulators[key] then
                 self.grassRotAccumulators[key] = 0
             end
 
-            -- Add randomized accumulation amount
-            local randomAmount = GroundPropertyTracker.ROT_ACCUMULATION_MIN +
+            -- Add randomized accumulation amount based on rot level
+            local baseAmount = GroundPropertyTracker.ROT_ACCUMULATION_MIN +
                 math.random() * (GroundPropertyTracker.ROT_ACCUMULATION_MAX - GroundPropertyTracker.ROT_ACCUMULATION_MIN)
-            self.grassRotAccumulators[key] = self.grassRotAccumulators[key] + randomAmount
+            
+            -- Scale by rot level (slow = 1x, normal = 2x)
+            local scaledAmount = baseAmount * rotLevel
+            self.grassRotAccumulators[key] = self.grassRotAccumulators[key] + scaledAmount
 
-            -- Check if threshold reached
+            -- Check if threshold reached for removal
             if self.grassRotAccumulators[key] >= GroundPropertyTracker.ROT_REMOVAL_THRESHOLD then
                 local removalAmount = GroundPropertyTracker.ROT_REMOVAL_THRESHOLD
 
@@ -664,22 +703,6 @@ function GroundPropertyTracker:updateGrassMoisture(moistureDelta)
                 local gridX = pile.gridX
                 local gridZ = pile.gridZ
                 local halfSize = GroundPropertyTracker.GRID_SIZE / 2
-
-                -- First verify there's actually material at this location
-                -- local checkRadius = halfSize
-                -- local existingVolume = DensityMapHeightUtil.getFillLevelAtArea(
-                --     pile.fillType,
-                --     gridX - checkRadius, gridZ - checkRadius,
-                --     gridX + checkRadius, gridZ - checkRadius,
-                --     gridX - checkRadius, gridZ + checkRadius
-                -- )
-
-                -- if existingVolume <= 0 then
-                --     -- No material found, cleanup tracker and accumulator
-                --     self.grassRotAccumulators[key] = nil
-                --     self:checkPileHasContent(gridX, gridZ, pile.fillType)
-                --     continue
-                -- end
 
                 if not self:checkPileHasContent(gridX, gridZ, pile.fillType) then
                     -- No material found, cleanup tracker and accumulator
@@ -720,7 +743,6 @@ function GroundPropertyTracker:updateGrassMoisture(moistureDelta)
                 )
 
                 if removed ~= 0 then
-                    -- Reset accumulator after removal
                     self.grassRotAccumulators[key] = 0
 
                     -- Check if pile still has content, cleanup if empty
@@ -728,7 +750,7 @@ function GroundPropertyTracker:updateGrassMoisture(moistureDelta)
                 end
             end
         else
-            -- Moisture below threshold, clear accumulator if exists
+            -- Clear accumulator when not rotting
             if self.grassRotAccumulators[key] then
                 self.grassRotAccumulators[key] = nil
             end
@@ -832,8 +854,9 @@ end
 -- Update moisture levels for all straw piles
 -- Straw rots away when moisture > 15% (similar to grass)
 -- @param moistureDelta: Amount to change moisture (can be positive or negative)
+-- @param dt: Delta time in milliseconds since last update
 ---
-function GroundPropertyTracker:updateStrawMoisture(moistureDelta)
+function GroundPropertyTracker:updateStrawMoisture(moistureDelta, dt)
     if not self.isServer then return end
     if moistureDelta == 0 then return end
 
@@ -851,20 +874,62 @@ function GroundPropertyTracker:updateStrawMoisture(moistureDelta)
         end
     end
 
-    -- Process straw rotting (wet straw gradually decays)
+    -- Update rain exposure and process straw rotting
+    local weather = g_currentMission.environment.weather
+    local isRaining = weather:getRainFallScale() > 0.1
+    local updateDelta = dt * g_currentMission:getEffectiveTimeScale()
+
     for key, pile in pairs(self.strawPiles) do
-        if pile.properties.moisture and pile.properties.moisture > GroundPropertyTracker.ROT_MOISTURE_THRESHOLD then
+        -- Initialize exposure tracking if needed
+        if not pile.properties.rainExposure then
+            pile.properties.rainExposure = 0
+        end
+        if not pile.properties.peakRainExposure then
+            pile.properties.peakRainExposure = 0
+        end
+
+        -- Update rain exposure
+        if isRaining then
+            pile.properties.rainExposure = pile.properties.rainExposure + updateDelta
+            -- Track peak exposure
+            if pile.properties.rainExposure > pile.properties.peakRainExposure then
+                pile.properties.peakRainExposure = pile.properties.rainExposure
+            end
+        else
+            -- Drying: exposure decrements slowly
+            pile.properties.rainExposure = math.max(0, pile.properties.rainExposure - (updateDelta * GroundPropertyTracker.DRYING_DECAY_RATE))
+            
+            -- If we've dried below slow rot threshold and haven't started rotting, reset peak
+            if pile.properties.rainExposure < GroundPropertyTracker.SLOW_ROT_EXPOSURE_TIME and
+               pile.properties.peakRainExposure < GroundPropertyTracker.SLOW_ROT_EXPOSURE_TIME then
+                pile.properties.peakRainExposure = pile.properties.rainExposure
+            end
+        end
+
+        -- Determine rot level based on peak exposure
+        local rotLevel = 0  -- 0 = none, 1 = slow, 2 = normal
+        if pile.properties.peakRainExposure >= GroundPropertyTracker.NORMAL_ROT_EXPOSURE_TIME then
+            rotLevel = 2
+        elseif pile.properties.peakRainExposure >= GroundPropertyTracker.SLOW_ROT_EXPOSURE_TIME then
+            rotLevel = 1
+        end
+
+        -- Apply rot if threshold reached
+        if rotLevel > 0 then
             -- Initialize accumulator if not exists
             if not self.strawRotAccumulators[key] then
                 self.strawRotAccumulators[key] = 0
             end
 
-            -- Add randomized accumulation amount
-            local randomAmount = GroundPropertyTracker.ROT_ACCUMULATION_MIN +
+            -- Add randomized accumulation amount based on rot level
+            local baseAmount = GroundPropertyTracker.ROT_ACCUMULATION_MIN +
                 math.random() * (GroundPropertyTracker.ROT_ACCUMULATION_MAX - GroundPropertyTracker.ROT_ACCUMULATION_MIN)
-            self.strawRotAccumulators[key] = self.strawRotAccumulators[key] + randomAmount
+            
+            -- Scale by rot level (slow = 1x, normal = 2x)
+            local scaledAmount = baseAmount * rotLevel
+            self.strawRotAccumulators[key] = self.strawRotAccumulators[key] + scaledAmount
 
-            -- Check if threshold reached
+            -- Check if threshold reached for removal
             if self.strawRotAccumulators[key] >= GroundPropertyTracker.ROT_REMOVAL_THRESHOLD then
                 local removalAmount = GroundPropertyTracker.ROT_REMOVAL_THRESHOLD
 
@@ -872,15 +937,6 @@ function GroundPropertyTracker:updateStrawMoisture(moistureDelta)
                 local gridX = pile.gridX
                 local gridZ = pile.gridZ
                 local halfSize = GroundPropertyTracker.GRID_SIZE / 2
-
-                -- First verify there's actually material at this location
-                -- local checkRadius = halfSize
-                -- local existingVolume = DensityMapHeightUtil.getFillLevelAtArea(
-                --     pile.fillType,
-                --     gridX - checkRadius, gridZ - checkRadius,
-                --     gridX + checkRadius, gridZ - checkRadius,
-                --     gridX - checkRadius, gridZ + checkRadius
-                -- )
 
                 local hasContent = self:checkPileHasContent(gridX, gridZ, pile.fillType)
                 if not hasContent then
@@ -929,7 +985,7 @@ function GroundPropertyTracker:updateStrawMoisture(moistureDelta)
                 end
             end
         else
-            -- Moisture below threshold, clear accumulator if exists
+            -- Clear accumulator when not rotting
             if self.strawRotAccumulators[key] then
                 self.strawRotAccumulators[key] = nil
             end

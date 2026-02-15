@@ -21,6 +21,9 @@ Github: https://github.com/sprkem/FS25_MoistureSystem
 
 Beta Changelog:
 
+0.0.0.7 [WIP]:
+- Reworked ground material rotting to be based on rain exposure.
+
 0.0.0.6:
 - Wrapped grass bales will track moisture % on the bale. When the bale is done fermenting, volume will be reduced based on moisture thresholds.
 - Straw that is baled will track moisture on the baler. The output bale will have rain exposure % applied if over certain thresholds.

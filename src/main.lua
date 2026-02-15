@@ -151,9 +151,9 @@ function MoistureSystem:updateMoistureLevel(delta)
 
     -- Update grass pile moisture
     if g_currentMission.groundPropertyTracker then
-        g_currentMission.groundPropertyTracker:updateGrassMoisture(moistureDelta)
+        g_currentMission.groundPropertyTracker:updateGrassMoisture(moistureDelta, delta)
         g_currentMission.groundPropertyTracker:updateHayMoisture(moistureDelta)
-        g_currentMission.groundPropertyTracker:updateStrawMoisture(moistureDelta)
+        g_currentMission.groundPropertyTracker:updateStrawMoisture(moistureDelta, delta)
     end
 end
 
