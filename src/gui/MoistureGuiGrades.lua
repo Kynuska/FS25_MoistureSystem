@@ -19,7 +19,7 @@ end
 
 function MoistureGuiGrades:onGuiSetupFinished()
     MoistureGuiGrades:superClass().onGuiSetupFinished(self)
-    
+
     self.cropGradeTable:setDataSource(self.cropGradeRenderer)
     self.cropGradeTable:setDelegate(self.cropGradeRenderer)
 end
@@ -35,12 +35,12 @@ end
 
 function MoistureGuiGrades:updateTable()
     local tableData = {}
-    
+
     -- Build table data from CropValueMap
     for fillTypeIndex, ranges in pairs(CropValueMap.Data) do
         -- local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillTypeIndex)
         local fillTypeTitle = g_fillTypeManager:getFillTypeByIndex(fillTypeIndex).title
-        
+
         -- Collect ranges for each grade (up to 2 ranges per grade)
         local gradeData = {
             [CropValueMap.Grades.A] = {},
@@ -48,15 +48,22 @@ function MoistureGuiGrades:updateTable()
             [CropValueMap.Grades.C] = {},
             [CropValueMap.Grades.D] = {}
         }
-        
+
         for _, range in ipairs(ranges) do
             local lowerPercent = math.floor(range.lower * 100)
             local upperPercent = math.floor(range.upper * 100)
             local multiplierPercent = math.floor(range.multiplier * 100)
-            local rangeText = string.format("%d-%d%% (%d%%)", lowerPercent, upperPercent, multiplierPercent)
+
+            local rangeText
+            if #gradeData[range.grade] == 0 then
+                rangeText = string.format("%d-%d%% (%d%%)", lowerPercent, upperPercent, multiplierPercent)
+            else
+                rangeText = string.format("%d-%d%%", lowerPercent, upperPercent)
+            end
+
             table.insert(gradeData[range.grade], rangeText)
         end
-        
+
         table.insert(tableData, {
             name = fillTypeTitle,
             gradeA1 = gradeData[CropValueMap.Grades.A][1] or "-",
@@ -69,10 +76,10 @@ function MoistureGuiGrades:updateTable()
             gradeD2 = gradeData[CropValueMap.Grades.D][2] or ""
         })
     end
-    
+
     -- Sort by name
     table.sort(tableData, function(a, b) return a.name < b.name end)
-    
+
     self.cropGradeRenderer:setData(tableData)
     self.cropGradeTable:reloadData()
 end
