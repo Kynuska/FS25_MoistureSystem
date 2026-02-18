@@ -375,11 +375,7 @@ function MoistureSystem:setObjectMoisture(uniqueId, fillType, moisture)
         return
     end
 
-    if self.objectMoisture[uniqueId] == nil then
-        self.objectMoisture[uniqueId] = {}
-    end
-
-    self.objectMoisture[uniqueId][fillTypeName] = moisture
+    g_client:getServerConnection():sendEvent(ObjectMoistureUpdateEvent.new(uniqueId, fillTypeName, moisture))
 end
 
 ---
