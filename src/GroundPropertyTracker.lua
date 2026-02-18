@@ -16,8 +16,8 @@ GroundPropertyTracker.NORMAL_ROT_EXPOSURE_TIME = 50 * 60 * 1000 -- 50 minutes (m
 GroundPropertyTracker.DRYING_DECAY_RATE = 0.375
 GroundPropertyTracker.ROT_REMOVAL_THRESHOLD = 10.0 -- liters removed when accumulator reached
 -- ROT_ACCUMULATION_* are liters/sec at timescale 1; scaled by (updateDelta/1000)
-GroundPropertyTracker.ROT_ACCUMULATION_MIN = 0.2
-GroundPropertyTracker.ROT_ACCUMULATION_MAX = 0.5
+GroundPropertyTracker.ROT_ACCUMULATION_MIN = 0.02
+GroundPropertyTracker.ROT_ACCUMULATION_MAX = 0.05
 
 function GroundPropertyTracker.new()
     local self = setmetatable({}, GroundPropertyTracker_mt)
@@ -142,8 +142,16 @@ function GroundPropertyTracker:getAffectedGridCells(sx, sz, wx, wz, hx, hz)
     local maxX = math.max(sx, wx, hx)
     local minZ = math.min(sz, wz, hz)
     local maxZ = math.max(sz, wz, hz)
-    -- Add dropped pile and distribute properties across grid cells
+    
+    -- Calculate grid boundaries
+    local startGridX = math.floor(minX / GroundPropertyTracker.GRID_SIZE) * GroundPropertyTracker.GRID_SIZE
+    local endGridX = math.floor(maxX / GroundPropertyTracker.GRID_SIZE) * GroundPropertyTracker.GRID_SIZE
+    local startGridZ = math.floor(minZ / GroundPropertyTracker.GRID_SIZE) * GroundPropertyTracker.GRID_SIZE
     local endGridZ = math.floor(maxZ / GroundPropertyTracker.GRID_SIZE) * GroundPropertyTracker.GRID_SIZE
+    
+    -- Initialize return values
+    local cells = {}
+    local totalOverlapArea = 0
 
     for gx = startGridX, endGridX, GroundPropertyTracker.GRID_SIZE do
         for gz = startGridZ, endGridZ, GroundPropertyTracker.GRID_SIZE do
