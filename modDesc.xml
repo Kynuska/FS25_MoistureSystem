@@ -135,7 +135,7 @@ Beta Changelog:
                     <text text="$l10n_help_moisture_overview_2"/>
                 </paragraph>
             </page>
-            <page title="$l10n_help_moisture_field_title" iconSliceId="helpline.icon_shop">
+            <page title="$l10n_help_moisture_field_title" iconSliceId="helpline.farmingBasics_harvesting">
                 <paragraph>
                     <text text="$l10n_help_moisture_field_1"/>
                 </paragraph>
@@ -143,7 +143,7 @@ Beta Changelog:
                     <text text="$l10n_help_moisture_field_2"/>
                 </paragraph>
             </page>
-            <page title="$l10n_help_moisture_grading_title" iconSliceId="helpline.icon_shop">
+            <page title="$l10n_help_moisture_grading_title" iconSliceId="helpline.icon_yieldBoost">
                 <paragraph>
                     <text text="$l10n_help_moisture_grading_1"/>
                 </paragraph>
@@ -154,7 +154,7 @@ Beta Changelog:
                     <text text="$l10n_help_moisture_grading_3"/>
                 </paragraph>
             </page>
-            <page title="$l10n_help_moisture_grass_title" iconSliceId="helpline.icon_shop">
+            <page title="$l10n_help_moisture_grass_title" iconSliceId="helpline.crops_grass">
                 <paragraph>
                     <text text="$l10n_help_moisture_grass_1"/>
                 </paragraph>
@@ -165,7 +165,7 @@ Beta Changelog:
                     <text text="$l10n_help_moisture_grass_3"/>
                 </paragraph>
             </page>
-            <page title="$l10n_help_moisture_groundrot_title" iconSliceId="helpline.icon_shop">
+            <page title="$l10n_help_moisture_groundrot_title" iconSliceId="helpline.icon_greenery">
                 <paragraph>
                     <text text="$l10n_help_moisture_groundrot_1"/>
                 </paragraph>
@@ -173,7 +173,7 @@ Beta Changelog:
                     <text text="$l10n_help_moisture_groundrot_2"/>
                 </paragraph>
             </page>
-            <page title="$l10n_help_moisture_bales_title" iconSliceId="helpline.icon_shop">
+            <page title="$l10n_help_moisture_bales_title" iconSliceId="helpline.icon_others">
                 <paragraph>
                     <text text="$l10n_help_moisture_bales_1"/>
                 </paragraph>
@@ -184,7 +184,7 @@ Beta Changelog:
                     <text text="$l10n_help_moisture_bales_3"/>
                 </paragraph>
             </page>
-            <page title="$l10n_help_moisture_meter_title" iconSliceId="helpline.icon_shop">
+            <page title="$l10n_help_moisture_meter_title" iconSliceId="helpline.firstSteps_startingEquipment">
                 <paragraph>
                     <text text="$l10n_help_moisture_meter_1"/>
                 </paragraph>
@@ -192,7 +192,7 @@ Beta Changelog:
                     <text text="$l10n_help_moisture_meter_2"/>
                 </paragraph>
             </page>
-            <page title="$l10n_help_moisture_settings_title" iconSliceId="helpline.icon_shop">
+            <page title="$l10n_help_moisture_settings_title" iconSliceId="helpline.firstSteps_whatFarmer">
                 <paragraph>
                     <text text="$l10n_help_moisture_settings_1"/>
                 </paragraph>
