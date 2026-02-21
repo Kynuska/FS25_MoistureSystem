@@ -21,8 +21,8 @@ Github: https://github.com/sprkem/FS25_MoistureSystem
 
 Beta Changelog:
 
-0.0.0.9 [WIP]:
-- Multiplayer initial client stat event added. Misc multiplayer fixes.
+0.0.0.9:
+- Multiplayer initial client state event added. Lots of other multiplayer fixes.
 - Validate ground piles on save to ensure we don't save empty cells
 - Fix active cleanup of piles during baling and improved moisture aggregation
 - Improve stored bale save logic to only track bales with moisture/rot data
