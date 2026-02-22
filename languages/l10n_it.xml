@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<l10n>
+	<translationContributors/>
+	<texts>
+		<!-- Settings Section -->
+		<text name="setting_moisture_section" text="Sistema di Umidità"/>
+		
+		<!-- Settings -->
+		<text name="setting_moisture_environment" text="Ambiente Climatico"/>
+		<text name="setting_moisture_environment_tooltip" text="Imposta il tipo di clima per i calcoli dell'umidità"/>
+		<text name="setting_moisture_environment_dry" text="SECCO"/>
+		<text name="setting_moisture_environment_normal" text="NORMALE"/>
+		<text name="setting_moisture_environment_wet" text="UMIDO"/>
+		<text name="setting_moisture_moistureLossMultiplier" text="Moltiplicatore Perdita Umidità"/>
+		<text name="setting_moisture_moistureLossMultiplier_tooltip" text="Controlla la velocità di perdita di umidità (1-10)"/>
+		<text name="setting_moisture_moistureGainMultiplier" text="Moltiplicatore Guadagno Umidità"/>
+		<text name="setting_moisture_moistureGainMultiplier_tooltip" text="Controlla la velocità di guadagno di umidità dalla pioggia (1-10)"/>
+		<text name="setting_moisture_teddingMoistureReduction" text="Riduzione Umidità per Voltafieno"/>
+		<text name="setting_moisture_teddingMoistureReduction_tooltip" text="Quantità di umidità ridotta per passaggio di voltafieno (1-5%)"/>
+		<text name="setting_moisture_baleRotEnabled" text="Marciume delle Balle"/>
+		<text name="setting_moisture_baleRotEnabled_tooltip" text="Abilita il marciume delle balle durante pioggia/neve. Le balle avvolte e le balle sotto copertura sono protette."/>
+		<text name="setting_moisture_baleRotRate" text="Velocità Marciume Balle"/>
+		<text name="setting_moisture_baleRotRate_tooltip" text="Moltiplicatore per il tasso di perdita di volume delle balle. Valori più alti significano marciume più veloce."/>
+
+		<text name="setting_moisture_baleExposureDecayRate" text="Velocità di Asciugatura Balle"/>
+		<text name="setting_moisture_baleExposureDecayRate_tooltip" text="Quanto velocemente le balle si asciugano dopo che la pioggia si ferma. Più basso = asciugatura più lenta."/>
+		<text name="setting_moisture_showFieldMoisture" text="Mostra Umidità del Campo"/>
+		<text name="setting_moisture_showFieldMoisture_tooltip" text="Visualizza il livello di umidità corrente nella tua posizione nell'HUD informazioni del campo."/>
+		<text name="setting_moisture_moistureMeterReporting" text="Rapporto Misuratore Umidità"/>
+		<text name="setting_moisture_moistureMeterReporting_tooltip" text="Come il misuratore di umidità visualizza le letture."/>
+		<text name="setting_moisture_moistureMeterReporting_blinking" text="Avviso Lampeggiante"/>
+		<text name="setting_moisture_moistureMeterReporting_notification" text="Notifica"/>
+		
+		<!-- Generic On/Off -->
+		<text name="setting_setting_off" text="SPENTO"/>
+		<text name="setting_setting_on" text="ACCESO"/>
+		
+		<!-- Multiplayer Permission -->
+		<text name="permission_moisture_moistureSettings" text="Modifica Impostazioni Umidità"/>
+		
+		<!-- Input Bindings -->
+		<text name="input_MOISTURE_MENU" text="Apri Menu Umidità"/>
+		
+		<!-- HUD Display -->
+		<text name="moistureSystem_fieldInfo" text="Umidità del Campo"/>
+		<text name="moistureSystem_moisture" text="Umidità"/>
+		<text name="moistureSystem_range" text="Intervallo Previsto"/>
+		<text name="moistureSystem_rainExposure" text="Esposizione alla Pioggia"/>
+		<text name="moistureSystem_baleStatus" text="Stato"/>
+		<text name="moistureSystem_baleGettingWet" text="Si Sta Bagnando"/>
+		<text name="moistureSystem_baleRottingSlowly" text="Marcisce Lentamente"/>
+		<text name="moistureSystem_baleRotting" text="Marcisce"/>
+		<text name="moistureSystem_baleRottingQuickly" text="Marcisce Rapidamente"/>
+		<text name="moistureSystem_baleDrying" text="Si Asciuga"/>
+		
+		<!-- GUI -->
+		<text name="moistureSystem_gui_cropGradeValues" text="Valori di Qualità delle Colture"/>
+		<text name="moistureSystem_gui_description" text="I dati qui sotto mostrano la classificazione dell'umidità per ogni coltura supportata. L'intervallo di umidità per il grado è mostrato, e il moltiplicatore di prezzo per quel grado è mostrato tra parentesi."/>
+		<text name="moistureSystem_gui_cropName" text="Nome della Coltura"/>
+		<text name="moistureSystem_gui_gradeA" text="Grado A"/>
+		<text name="moistureSystem_gui_gradeB" text="Grado B"/>
+		<text name="moistureSystem_gui_gradeC" text="Grado C"/>
+		<text name="moistureSystem_gui_gradeD" text="Grado D"/>
+		
+		<!-- Calendar GUI -->
+		<text name="moistureSystem_gui_moistureCalendar" text="Calendario dell'Umidità"/>
+		<text name="moistureSystem_gui_currentEnvironment" text="Ambiente Corrente"/>
+		<text name="moistureSystem_gui_calendarDescription" text="Il calendario qui sotto mostra l'intervallo di umidità previsto per ogni mese in base all'impostazione dell'ambiente corrente. I livelli di umidità sono influenzati da precipitazioni, temperatura e stagione."/>
+		
+		<!-- Hand Tool -->
+		<text name="moistureSystem_moistureMeter" text="Misuratore di Umidità"/>
+		<text name="moistureSystem_moistureMeterFunction" text="Misura i livelli di umidità del campo"/>
+		<text name="moistureSystem_measureLocation" text="Misura Umidità"/>
+		<text name="moistureSystem_groundMoistureReading" text="Umidità del Terreno: %.2f%%"/>
+		
+		<!-- Help Menu -->
+		<text name="help_moisture_title" text="Sistema di Umidità"/>
+		
+		<!-- Overview Page -->
+		<text name="help_moisture_overview_title" text="Panoramica"/>
+		<text name="help_moisture_overview_1" text="La mod Sistema di Umidità introduce livelli di umidità dinamici che influenzano colture, erba e balle in tutta la tua fattoria. L'umidità varia in base all'elevazione del terreno, alle condizioni meteorologiche e all'ora del giorno."/>
+		<text name="help_moisture_overview_2" text="Questo crea un'esperienza agricola più realistica dove i tempi di raccolta e la gestione dello stoccaggio contano. Usa il Menu Umidità (Shift+M) per visualizzare tabelle dettagliate dei gradi delle colture e calendari dell'umidità."/>
+		
+		<!-- Field Moisture Page -->
+		<text name="help_moisture_field_title" text="Umidità del Campo"/>
+		<text name="help_moisture_field_1" text="L'umidità del campo varia nella tua fattoria in base a diversi fattori: Elevazione del terreno (le aree più basse sono più umide), condizioni meteorologiche (pioggia e neve aumentano l'umidità), temperatura (il clima più caldo accelera l'asciugatura) e ora del giorno (l'umidità diminuisce di più durante il giorno)."/>
+		<text name="help_moisture_field_2" text="Gli intervalli di umidità mensili cambiano durante l'anno in base al tipo di ambiente scelto (Secco/Normale/Umido). Usa lo strumento manuale misuratore di umidità o abilita la visualizzazione HUD nelle impostazioni per monitorare i livelli di umidità."/>
+		
+		<!-- Crop Grading Page -->
+		<text name="help_moisture_grading_title" text="Qualità e Classificazione delle Colture"/>
+		<text name="help_moisture_grading_1" text="Le colture raccolte sono classificate da A a D in base al loro contenuto di umidità. Il Grado A è umidità ottimale con prezzo pieno, il Grado B è buona umidità con prezzo leggermente ridotto, il Grado C è umidità discreta con prezzo moderatamente ridotto, e il Grado D è umidità scarsa con prezzo significativamente ridotto."/>
+		<text name="help_moisture_grading_2" text="Ogni tipo di coltura ha il proprio intervallo di umidità ideale. Raccogli al momento giusto per massimizzare i tuoi profitti! L'umidità dal campo viene trasferita al tuo materiale raccolto e tracciata attraverso veicoli, cumuli a terra e stoccaggio."/>
+		<text name="help_moisture_grading_3" text="Visualizza gli intervalli di grado dettagliati per tutte le colture supportate nel Menu Umidità (Shift+M). Le colture includono grano, orzo, avena, mais, colza, girasole, soia e molte altre."/>
+		
+		<!-- Grass & Hay Page -->
+		<text name="help_moisture_grass_title" text="Voltafieno ed Fieno"/>
+		<text name="help_moisture_grass_1" text="Gestisci la produzione di fieno con meccaniche realistiche di asciugatura dell'erba. Usa un voltafieno per spargere e aerare l'erba, riducendo il suo contenuto di umidità. Puoi voltare più volte per un'asciugatura più veloce! Il tempo influisce sull'asciugatura - il sole la accelera mentre la pioggia aumenta l'umidità."/>
+		<text name="help_moisture_grass_2" text="Quando l'erba si asciuga sufficientemente (sotto il 7% di umidità), si converte automaticamente in fieno. Se il fieno si bagna di nuovo troppo (sopra il 7% di umidità), si riconverte in erba."/>
+		<text name="help_moisture_grass_3" text="I cumuli di erba accumulano tempo di esposizione alla pioggia quando lasciati a terra durante tempo umido. Dopo sufficiente esposizione, l'erba inizia a marcire e perde gradualmente volume. Raccogli o imballa la tua erba prontamente per evitare perdite."/>
+		
+		<!-- Ground Rot Page -->
+		<text name="help_moisture_groundrot_title" text="Marciume del Materiale a Terra"/>
+		<text name="help_moisture_groundrot_1" text="Sia i cumuli di erba che di paglia lasciati a terra tracciano l'esposizione alla pioggia. I cumuli possono tollerare un po' di pioggia prima che inizi il degrado (periodo di tolleranza), ma più a lungo il materiale è stato esposto alla pioggia, più velocemente marcisce."/>
+		<text name="help_moisture_groundrot_2" text="I cumuli si asciugano lentamente quando la pioggia si ferma, ma una volta che il marciume inizia, continua. Il materiale marcio scompare gradualmente e perde volume. Raccogli o imballa la tua paglia e la tua erba prontamente per evitare perdite, specialmente prima del cattivo tempo."/>
+		
+		<!-- Bales Page -->
+		<text name="help_moisture_bales_title" text="Gestione delle Balle"/>
+		<text name="help_moisture_bales_1" text="Le balle lasciate esposte al tempo accumulano gradualmente tempo di esposizione alla pioggia quando sono scoperte durante tempo umido. Le balle possono tollerare un po' di esposizione prima che inizi il marciume - questa fase iniziale è chiamata 'Si Sta Bagnando'."/>
+		<text name="help_moisture_bales_2" text="Dopo il periodo di tolleranza, le balle entrano in stati di marciume progressivi: Marcisce Lentamente, Marcisce e Marcisce Rapidamente. Più a lungo le balle sono state esposte in passato, più velocemente marciscono. Le balle si asciugano lentamente quando la pioggia si ferma, ma una volta che il marciume inizia, non possono recuperare e perderanno gradualmente volume."/>
+		<text name="help_moisture_bales_3" text="Protezione: Le balle avvolte e le balle stoccate sotto copertura sono protette dal tempo. Conserva le balle al coperto, avvolgile o vendile prontamente per prevenire perdite."/>
+		
+		<!-- Moisture Meter Page -->
+		<text name="help_moisture_meter_title" text="Uso del Misuratore di Umidità"/>
+		<text name="help_moisture_meter_1" text="Il misuratore di umidità è uno strumento manuale disponibile nella sezione Strumenti Manuali del negozio. Per usarlo: Acquista il misuratore di umidità, equipaggialo dal tuo menu strumenti manuali, poi premi e tieni premuto il pulsante azione per 4 secondi per ottenere una lettura dell'umidità nella tua posizione corrente."/>
+		<text name="help_moisture_meter_2" text="In alternativa, puoi abilitare 'Mostra Umidità del Campo' nelle impostazioni di gioco per vedere l'umidità nell'HUD informazioni del campo senza usare lo strumento manuale. Questo è utile per controlli rapidi durante l'uso delle attrezzature."/>
+		
+		<!-- Settings Page -->
+		<text name="help_moisture_settings_title" text="Configurazione"/>
+		<text name="help_moisture_settings_1" text="Scegli tra tre preset climatici nelle impostazioni di gioco: Secco (livelli di umidità più bassi), Normale (equilibrato, predefinito) o Umido (livelli di umidità più alti). Ogni preset influenza gli intervalli di umidità mensili durante tutto l'anno."/>
+		<text name="help_moisture_settings_2" text="Regola finemente il comportamento con impostazioni regolabili: I Moltiplicatori di Perdita/Guadagno Umidità controllano la velocità di asciugatura e bagnatura, la Riduzione Umidità per Voltafieno regola l'asciugatura per passaggio, e le impostazioni di Marciume delle Balle controllano se/quanto velocemente le balle deteriorano."/>
+		<text name="help_moisture_settings_3" text="Altre impostazioni includono il Periodo di Tolleranza Balle (tolleranza alla pioggia prima del marciume), Velocità di Asciugatura Balle (velocità di recupero), attivazione Visualizzazione Umidità del Campo e stile Rapporto Misuratore Umidità. Nel multigiocatore, l'host/admin controlla queste impostazioni."/>
+	</texts>
+</l10n>

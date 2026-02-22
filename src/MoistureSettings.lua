@@ -12,7 +12,6 @@ MoistureSettings.menuItems = {
     'teddingMoistureReduction',
     'baleRotEnabled',
     'baleRotRate',
-    'baleGracePeriod',
     'baleExposureDecayRate',
     'showFieldMoisture',
     'moistureMeterReporting'
@@ -83,20 +82,12 @@ MoistureSettings.SETTINGS.baleRotRate = {
     ['strings'] = { "50%", "75%", "100%", "125%", "150%", "200%" }
 }
 
-MoistureSettings.SETTINGS.baleGracePeriod = {
-    ['default'] = 3, -- 15 minutes
-    ['serverOnly'] = true,
-    ['permission'] = 'moistureSettings',
-    ['values'] = { 5, 10, 15, 30, 60 }, -- minutes
-    ['strings'] = { "5min", "10min", "15min", "30min", "60min" }
-}
-
 MoistureSettings.SETTINGS.baleExposureDecayRate = {
     ['default'] = 3, -- 1.0 multiplier (40 minutes to dry)
     ['serverOnly'] = true,
     ['permission'] = 'moistureSettings',
     ['values'] = { 0.5, 0.75, 1.0, 1.5, 2.0 }, -- decay rate multipliers
-    ['strings'] = { "80min", "53min", "40min", "27min", "20min" } -- time to dry 15min exposure
+    ['strings'] = { "0.5x", "0.75x", "1x", "1.5x", "2x" }
 }
 
 MoistureSettings.SETTINGS.showFieldMoisture = {

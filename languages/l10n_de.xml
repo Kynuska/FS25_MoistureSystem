@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<l10n>
+	<translationContributors/>
+	<texts>
+		<!-- Settings Section -->
+		<text name="setting_moisture_section" text="Feuchtigkeitssystem"/>
+		
+		<!-- Settings -->
+		<text name="setting_moisture_environment" text="Wetterumgebung"/>
+		<text name="setting_moisture_environment_tooltip" text="Legt den Klimatyp für Feuchtigkeitsberechnungen fest"/>
+		<text name="setting_moisture_environment_dry" text="TROCKEN"/>
+		<text name="setting_moisture_environment_normal" text="NORMAL"/>
+		<text name="setting_moisture_environment_wet" text="FEUCHT"/>
+		<text name="setting_moisture_moistureLossMultiplier" text="Feuchtigkeitsverlust-Multiplikator"/>
+		<text name="setting_moisture_moistureLossMultiplier_tooltip" text="Steuert die Geschwindigkeit des Feuchtigkeitsverlusts (1-10)"/>
+		<text name="setting_moisture_moistureGainMultiplier" text="Feuchtigkeitsgewinn-Multiplikator"/>
+		<text name="setting_moisture_moistureGainMultiplier_tooltip" text="Steuert die Geschwindigkeit des Feuchtigkeitsgewinns durch Regen (1-10)"/>
+		<text name="setting_moisture_teddingMoistureReduction" text="Feuchtigkeitsreduzierung durch Heuen"/>
+		<text name="setting_moisture_teddingMoistureReduction_tooltip" text="Menge der reduzierten Feuchtigkeit pro Heudurchgang (1-5%)"/>
+		<text name="setting_moisture_baleRotEnabled" text="Ballenfäule"/>
+		<text name="setting_moisture_baleRotEnabled_tooltip" text="Ballenfäule bei Regen/Schnee aktivieren. Wickelballen und Ballen unter Dach sind geschützt."/>
+		<text name="setting_moisture_baleRotRate" text="Ballenfäule-Rate"/>
+		<text name="setting_moisture_baleRotRate_tooltip" text="Multiplikator für die Verlustrate des Ballenvolumens. Höhere Werte bedeuten schnellere Fäule."/>
+		<text name="setting_moisture_baleExposureDecayRate" text="Ballen-Trocknungsrate"/>
+		<text name="setting_moisture_baleExposureDecayRate_tooltip" text="Wie schnell Ballen nach Regenende trocknen. Niedriger = langsamere Trocknung."/>
+		<text name="setting_moisture_showFieldMoisture" text="Feldfeuchtigkeit anzeigen"/>
+		<text name="setting_moisture_showFieldMoisture_tooltip" text="Zeigt den aktuellen Feuchtigkeitsgrad an Ihrer Position im Feldinfo-HUD an."/>
+		<text name="setting_moisture_moistureMeterReporting" text="Feuchtigkeitsmesser-Bericht"/>
+		<text name="setting_moisture_moistureMeterReporting_tooltip" text="Wie der Feuchtigkeitsmesser Messwerte anzeigt."/>
+		<text name="setting_moisture_moistureMeterReporting_blinking" text="Blinkende Warnung"/>
+		<text name="setting_moisture_moistureMeterReporting_notification" text="Benachrichtigung"/>
+		
+		<!-- Generic On/Off -->
+		<text name="setting_setting_off" text="AUS"/>
+		<text name="setting_setting_on" text="EIN"/>
+		
+		<!-- Multiplayer Permission -->
+		<text name="permission_moisture_moistureSettings" text="Feuchtigkeitseinstellungen ändern"/>
+		
+		<!-- Input Bindings -->
+		<text name="input_MOISTURE_MENU" text="Feuchtigkeitsmenü öffnen"/>
+		
+		<!-- HUD Display -->
+		<text name="moistureSystem_fieldInfo" text="Feldfeuchtigkeit"/>
+		<text name="moistureSystem_moisture" text="Feuchtigkeit"/>
+		<text name="moistureSystem_range" text="Erwarteter Bereich"/>
+		<text name="moistureSystem_rainExposure" text="Regenexposition"/>
+		<text name="moistureSystem_baleStatus" text="Status"/>
+		<text name="moistureSystem_baleGettingWet" text="Wird Nass"/>
+		<text name="moistureSystem_baleRottingSlowly" text="Fault Langsam"/>
+		<text name="moistureSystem_baleRotting" text="Fault"/>
+		<text name="moistureSystem_baleRottingQuickly" text="Fault Schnell"/>
+		<text name="moistureSystem_baleDrying" text="Trocknet"/>
+		
+		<!-- GUI -->
+		<text name="moistureSystem_gui_cropGradeValues" text="Erntegütewerte"/>
+		<text name="moistureSystem_gui_description" text="Die unten stehenden Daten zeigen die Feuchtigkeitsbewertung für jede unterstützte Ernte. Der Feuchtigkeitsbereich für die Güteklasse wird angezeigt, und der Preismultiplikator für diese Klasse wird in Klammern angezeigt."/>
+		<text name="moistureSystem_gui_cropName" text="Erntename"/>
+		<text name="moistureSystem_gui_gradeA" text="Klasse A"/>
+		<text name="moistureSystem_gui_gradeB" text="Klasse B"/>
+		<text name="moistureSystem_gui_gradeC" text="Klasse C"/>
+		<text name="moistureSystem_gui_gradeD" text="Klasse D"/>
+		
+		<!-- Calendar GUI -->
+		<text name="moistureSystem_gui_moistureCalendar" text="Feuchtigkeitskalender"/>
+		<text name="moistureSystem_gui_currentEnvironment" text="Aktuelle Umgebung"/>
+		<text name="moistureSystem_gui_calendarDescription" text="Der Kalender unten zeigt den erwarteten Feuchtigkeitsbereich für jeden Monat basierend auf Ihrer aktuellen Umgebungseinstellung. Feuchtigkeitsniveaus werden von Niederschlag, Temperatur und Jahreszeit beeinflusst."/>
+		
+		<!-- Hand Tool -->
+		<text name="moistureSystem_moistureMeter" text="Feuchtigkeitsmesser"/>
+		<text name="moistureSystem_moistureMeterFunction" text="Feldfeuchtigkeitsniveaus messen"/>
+		<text name="moistureSystem_measureLocation" text="Feuchtigkeit messen"/>
+		<text name="moistureSystem_groundMoistureReading" text="Bodenfeuchtigkeit: %.2f%%"/>
+		
+		<!-- Help Menu -->
+		<text name="help_moisture_title" text="Feuchtigkeitssystem"/>
+		
+		<!-- Overview Page -->
+		<text name="help_moisture_overview_title" text="Übersicht"/>
+		<text name="help_moisture_overview_1" text="Die Feuchtigkeitssystem-Mod führt dynamische Feuchtigkeitsniveaus ein, die Ernten, Gras und Ballen auf Ihrem gesamten Hof beeinflussen. Die Feuchtigkeit variiert basierend auf Geländehöhe, Wetterbedingungen und Tageszeit."/>
+		<text name="help_moisture_overview_2" text="Dies schafft ein realistischeres Landwirtschaftserlebnis, bei dem Erntezeit und Lagerverwaltung wichtig sind. Verwenden Sie das Feuchtigkeitsmenü (Shift+M), um detaillierte Erntegütetabellen und Feuchtigkeitskalender anzuzeigen."/>
+		
+		<!-- Field Moisture Page -->
+		<text name="help_moisture_field_title" text="Feldfeuchtigkeit"/>
+		<text name="help_moisture_field_1" text="Die Feldfeuchtigkeit variiert auf Ihrem Hof basierend auf mehreren Faktoren: Geländehöhe (niedrigere Bereiche sind feuchter), Wetterbedingungen (Regen und Schnee erhöhen die Feuchtigkeit), Temperatur (wärmeres Wetter beschleunigt die Trocknung) und Tageszeit (Feuchtigkeit nimmt tagsüber stärker ab)."/>
+		<text name="help_moisture_field_2" text="Monatliche Feuchtigkeitsbereiche ändern sich im Laufe des Jahres basierend auf Ihrem gewählten Umgebungstyp (Trocken/Normal/Feucht). Verwenden Sie das Handwerkzeug Feuchtigkeitsmesser oder aktivieren Sie die HUD-Anzeige in den Einstellungen, um Feuchtigkeitsniveaus zu überwachen."/>
+		
+		<!-- Crop Grading Page -->
+		<text name="help_moisture_grading_title" text="Erntequalität &amp; Bewertung"/>
+		<text name="help_moisture_grading_1" text="Geerntete Ernten werden von A bis D basierend auf ihrem Feuchtigkeitsgehalt bewertet. Klasse A ist optimale Feuchtigkeit mit vollem Preis, Klasse B ist gute Feuchtigkeit mit leicht reduziertem Preis, Klasse C ist akzeptable Feuchtigkeit mit mäßig reduziertem Preis, und Klasse D ist schlechte Feuchtigkeit mit erheblich reduziertem Preis."/>
+		<text name="help_moisture_grading_2" text="Jede Erntesorte hat ihren eigenen idealen Feuchtigkeitsbereich. Ernten Sie zur richtigen Zeit, um Ihre Gewinne zu maximieren! Die Feuchtigkeit vom Feld wird auf Ihr geerntetes Material übertragen und über Fahrzeuge, Bodenhaufen und Lager verfolgt."/>
+		<text name="help_moisture_grading_3" text="Sehen Sie sich die detaillierten Klassenbereiche für alle unterstützten Ernten im Feuchtigkeitsmenü (Shift+M) an. Ernten umfassen Weizen, Gerste, Hafer, Mais, Raps, Sonnenblume, Sojabohnen und viele mehr."/>
+		
+		<!-- Grass & Hay Page -->
+		<text name="help_moisture_grass_title" text="Gras Heuen &amp; Heu"/>
+		<text name="help_moisture_grass_1" text="Verwalten Sie die Heuproduktion mit realistischen Grastrocknungsmechaniken. Verwenden Sie einen Heuwender, um Gras zu verteilen und zu belüften, wodurch der Feuchtigkeitsgehalt reduziert wird. Sie können mehrmals heuen für schnellere Trocknung! Das Wetter beeinflusst die Trocknung - Sonnenschein beschleunigt sie, während Regen die Feuchtigkeit erhöht."/>
+		<text name="help_moisture_grass_2" text="Wenn Gras ausreichend trocknet (unter 7% Feuchtigkeit), wird es automatisch in Heu umgewandelt. Wenn Heu wieder zu nass wird (über 7% Feuchtigkeit), verwandelt es sich zurück in Gras."/>
+		<text name="help_moisture_grass_3" text="Grashaufen sammeln Regenexpositionszeit an, wenn sie bei nassem Wetter auf dem Boden liegen gelassen werden. Nach ausreichender Exposition beginnt Gras zu faulen und verliert allmählich an Volumen. Sammeln oder pressen Sie Ihr Gras rechtzeitig, um Verluste zu vermeiden."/>
+		
+		<!-- Ground Rot Page -->
+		<text name="help_moisture_groundrot_title" text="Bodenmaterialfäule"/>
+		<text name="help_moisture_groundrot_1" text="Sowohl Gras- als auch Strohhaufen, die auf dem Boden liegen gelassen werden, verfolgen die Regenexposition. Haufen können etwas Regen tolerieren, bevor die Degradation beginnt (Schonfrist), aber je länger das Material dem Regen ausgesetzt war, desto schneller fault es."/>
+		<text name="help_moisture_groundrot_2" text="Haufen trocknen langsam, wenn der Regen aufhört, aber sobald die Fäule beginnt, setzt sie sich fort. Faulendes Material verschwindet allmählich und verliert an Volumen. Sammeln oder pressen Sie Ihr Stroh und Gras rechtzeitig, um Verluste zu vermeiden, besonders vor schlechtem Wetter."/>
+		
+		<!-- Bales Page -->
+		<text name="help_moisture_bales_title" text="Ballenverwaltung"/>
+		<text name="help_moisture_bales_1" text="Ballen, die dem Wetter ausgesetzt sind, sammeln allmählich Regenexpositionszeit an, wenn sie bei nassem Wetter unbedeckt sind. Ballen können etwas Exposition tolerieren, bevor die Fäule beginnt - diese Anfangsphase wird 'Wird Nass' genannt."/>
+		<text name="help_moisture_bales_2" text="Nach der Schonfrist treten Ballen in progressive Fäulezustände ein: Fault Langsam, Fault und Fault Schnell. Je länger Ballen in der Vergangenheit exponiert waren, desto schneller faulen sie. Ballen trocknen langsam, wenn der Regen aufhört, aber sobald die Fäule beginnt, können sie sich nicht erholen und verlieren allmählich an Volumen."/>
+		<text name="help_moisture_bales_3" text="Schutz: Wickelballen und Ballen, die unter Dach gelagert werden, sind vor dem Wetter geschützt. Lagern Sie Ballen drinnen, wickeln Sie sie oder verkaufen Sie sie rechtzeitig, um Verluste zu vermeiden."/>
+		
+		<!-- Moisture Meter Page -->
+		<text name="help_moisture_meter_title" text="Verwendung des Feuchtigkeitsmessers"/>
+		<text name="help_moisture_meter_1" text="Der Feuchtigkeitsmesser ist ein Handwerkzeug, das im Handwerkzeuge-Bereich des Shops erhältlich ist. So verwenden Sie es: Kaufen Sie den Feuchtigkeitsmesser, rüsten Sie ihn aus Ihrem Handwerkzeuge-Menü aus, dann drücken und halten Sie die Aktionstaste für 4 Sekunden, um eine Feuchtigkeitsmessung an Ihrem aktuellen Standort zu erhalten."/>
+		<text name="help_moisture_meter_2" text="Alternativ können Sie 'Feldfeuchtigkeit anzeigen' in den Spieleinstellungen aktivieren, um die Feuchtigkeit im Feldinfo-HUD zu sehen, ohne das Handwerkzeug zu verwenden. Dies ist nützlich für schnelle Überprüfungen beim Betrieb von Geräten."/>
+		
+		<!-- Settings Page -->
+		<text name="help_moisture_settings_title" text="Konfiguration"/>
+		<text name="help_moisture_settings_1" text="Wählen Sie aus drei Klimavoreinstellungen in den Spieleinstellungen: Trocken (niedrigere Feuchtigkeitsniveaus), Normal (ausgewogen, Standard) oder Feucht (höhere Feuchtigkeitsniveaus). Jede Voreinstellung beeinflusst monatliche Feuchtigkeitsbereiche während des ganzen Jahres."/>
+		<text name="help_moisture_settings_2" text="Feineinstellung des Verhaltens mit anpassbaren Einstellungen: Feuchtigkeitsverlust-/Gewinn-Multiplikatoren steuern Trocknungs- und Befeuchtungsgeschwindigkeit, Feuchtigkeitsreduzierung durch Heuen passt die Trocknung pro Durchgang an, und Ballenfäule-Einstellungen steuern, ob/wie schnell Ballen sich verschlechtern."/>
+		<text name="help_moisture_settings_3" text="Weitere Einstellungen umfassen Ballen-Schonfrist (Regentoleranz vor Fäule), Ballen-Trocknungsrate (Erholungsgeschwindigkeit), Feldfeuchtigkeitsanzeige umschalten und Feuchtigkeitsmesser-Berichtsstil. Im Mehrspielermodus steuert der Host/Admin diese Einstellungen."/>
+	</texts>
+</l10n>

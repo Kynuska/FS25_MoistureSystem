@@ -16,7 +16,6 @@ function MoistureSettingsEvent.new()
     self.teddingMoistureReduction = g_currentMission.MoistureSystem.settings.teddingMoistureReduction
     self.baleRotEnabled = g_currentMission.MoistureSystem.settings.baleRotEnabled
     self.baleRotRate = g_currentMission.MoistureSystem.settings.baleRotRate
-    self.baleGracePeriod = g_currentMission.MoistureSystem.settings.baleGracePeriod
     self.baleExposureDecayRate = g_currentMission.MoistureSystem.settings.baleExposureDecayRate
     self.showFieldMoisture = g_currentMission.MoistureSystem.settings.showFieldMoisture
     self.moistureMeterReporting = g_currentMission.MoistureSystem.settings.moistureMeterReporting
@@ -30,7 +29,6 @@ function MoistureSettingsEvent:writeStream(streamId, connection)
     streamWriteFloat32(streamId, self.teddingMoistureReduction)
     streamWriteBool(streamId, self.baleRotEnabled)
     streamWriteFloat32(streamId, self.baleRotRate)
-    streamWriteInt32(streamId, self.baleGracePeriod)
     streamWriteFloat32(streamId, self.baleExposureDecayRate)
     streamWriteBool(streamId, self.showFieldMoisture)
     streamWriteInt32(streamId, self.moistureMeterReporting)
@@ -43,7 +41,6 @@ function MoistureSettingsEvent:readStream(streamId, connection)
     self.teddingMoistureReduction = streamReadFloat32(streamId)
     self.baleRotEnabled = streamReadBool(streamId)
     self.baleRotRate = streamReadFloat32(streamId)
-    self.baleGracePeriod = streamReadInt32(streamId)
     self.baleExposureDecayRate = streamReadFloat32(streamId)
     self.showFieldMoisture = streamReadBool(streamId)
     self.moistureMeterReporting = streamReadInt32(streamId)
@@ -61,7 +58,6 @@ function MoistureSettingsEvent:run(connection)
     g_currentMission.MoistureSystem.settings.teddingMoistureReduction = self.teddingMoistureReduction
     g_currentMission.MoistureSystem.settings.baleRotEnabled = self.baleRotEnabled
     g_currentMission.MoistureSystem.settings.baleRotRate = self.baleRotRate
-    g_currentMission.MoistureSystem.settings.baleGracePeriod = self.baleGracePeriod
     g_currentMission.MoistureSystem.settings.baleExposureDecayRate = self.baleExposureDecayRate
     g_currentMission.MoistureSystem.settings.showFieldMoisture = self.showFieldMoisture
     g_currentMission.MoistureSystem.settings.moistureMeterReporting = self.moistureMeterReporting

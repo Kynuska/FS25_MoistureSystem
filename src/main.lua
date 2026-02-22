@@ -19,7 +19,6 @@ function MoistureSystem:loadMap()
         teddingMoistureReduction = 0.02,
         baleRotEnabled = true,
         baleRotRate = 1.0,
-        baleGracePeriod = 15,
         baleExposureDecayRate = 1.0,
         showFieldMoisture = false,
         moistureMeterReporting = MoistureSettings.METER_REPORTING_BLINKING
@@ -585,11 +584,6 @@ function MoistureSystem:loadFromXMLFile()
             self.settings.baleRotRate = baleRotRate
         end
 
-        local baleGracePeriod = getXMLInt(xmlFile, MoistureSystem.SaveKey .. ".settings#baleGracePeriod")
-        if baleGracePeriod then
-            self.settings.baleGracePeriod = baleGracePeriod
-        end
-
         local baleExposureDecayRate = getXMLFloat(xmlFile, MoistureSystem.SaveKey .. ".settings#baleExposureDecayRate")
         if baleExposureDecayRate then
             self.settings.baleExposureDecayRate = baleExposureDecayRate
@@ -708,7 +702,6 @@ function MoistureSystem:saveToXmlFile()
         .teddingMoistureReduction)
     setXMLBool(xmlFile, MoistureSystem.SaveKey .. ".settings#baleRotEnabled", ms.settings.baleRotEnabled)
     setXMLFloat(xmlFile, MoistureSystem.SaveKey .. ".settings#baleRotRate", ms.settings.baleRotRate)
-    setXMLInt(xmlFile, MoistureSystem.SaveKey .. ".settings#baleGracePeriod", ms.settings.baleGracePeriod)
     setXMLFloat(xmlFile, MoistureSystem.SaveKey .. ".settings#baleExposureDecayRate", ms.settings.baleExposureDecayRate)
     setXMLBool(xmlFile, MoistureSystem.SaveKey .. ".settings#showFieldMoisture", ms.settings.showFieldMoisture)
     setXMLInt(xmlFile, MoistureSystem.SaveKey .. ".settings#moistureMeterReporting", ms.settings.moistureMeterReporting)
@@ -793,7 +786,6 @@ function MoistureSystem:writeInitialClientState(streamId, connection)
     streamWriteFloat32(streamId, self.settings.teddingMoistureReduction)
     streamWriteBool(streamId, self.settings.baleRotEnabled)
     streamWriteFloat32(streamId, self.settings.baleRotRate)
-    streamWriteInt32(streamId, self.settings.baleGracePeriod)
     streamWriteFloat32(streamId, self.settings.baleExposureDecayRate)
     streamWriteBool(streamId, self.settings.showFieldMoisture)
     streamWriteInt32(streamId, self.settings.moistureMeterReporting)
@@ -838,7 +830,6 @@ function MoistureSystem:readInitialClientState(streamId, connection)
     self.settings.teddingMoistureReduction = streamReadFloat32(streamId)
     self.settings.baleRotEnabled = streamReadBool(streamId)
     self.settings.baleRotRate = streamReadFloat32(streamId)
-    self.settings.baleGracePeriod = streamReadInt32(streamId)
     self.settings.baleExposureDecayRate = streamReadFloat32(streamId)
     self.settings.showFieldMoisture = streamReadBool(streamId)
     self.settings.moistureMeterReporting = streamReadInt32(streamId)

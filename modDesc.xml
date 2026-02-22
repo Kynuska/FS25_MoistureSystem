@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="105">
     <author>Ozz</author>
-    <version>0.0.0.9</version>
+    <version>0.0.0.10</version>
     <iconFilename>icon_MoistureSystem.dds</iconFilename>
     <title>
         <en>Moisture System</en>
@@ -29,6 +29,10 @@ Extensive customization options allow you to calibrate moisture dynamics, teddin
 Github: https://github.com/sprkem/FS25_MoistureSystem
 
 Beta Changelog:
+
+0.0.0.10:
+- Remove an unused setting
+- Add misc languages
 
 0.0.0.9:
 - Multiplayer initial client state event added. Lots of other multiplayer fixes.

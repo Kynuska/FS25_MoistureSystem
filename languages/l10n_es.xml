@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<l10n>
+	<translationContributors/>
+	<texts>
+		<!-- Settings Section -->
+		<text name="setting_moisture_section" text="Sistema de Humedad"/>
+		
+		<!-- Settings -->
+		<text name="setting_moisture_environment" text="Ambiente Climático"/>
+		<text name="setting_moisture_environment_tooltip" text="Establece el tipo de clima para los cálculos de humedad"/>
+		<text name="setting_moisture_environment_dry" text="SECO"/>
+		<text name="setting_moisture_environment_normal" text="NORMAL"/>
+		<text name="setting_moisture_environment_wet" text="HÚMEDO"/>
+		<text name="setting_moisture_moistureLossMultiplier" text="Multiplicador de Pérdida de Humedad"/>
+		<text name="setting_moisture_moistureLossMultiplier_tooltip" text="Controla la velocidad de pérdida de humedad (1-10)"/>
+		<text name="setting_moisture_moistureGainMultiplier" text="Multiplicador de Ganancia de Humedad"/>
+		<text name="setting_moisture_moistureGainMultiplier_tooltip" text="Controla la velocidad de ganancia de humedad por lluvia (1-10)"/>
+		<text name="setting_moisture_teddingMoistureReduction" text="Reducción de Humedad por Henificación"/>
+		<text name="setting_moisture_teddingMoistureReduction_tooltip" text="Cantidad de humedad reducida por pasada de henificación (1-5%)"/>
+		<text name="setting_moisture_baleRotEnabled" text="Pudrición de Pacas"/>
+		<text name="setting_moisture_baleRotEnabled_tooltip" text="Habilitar la pudrición de pacas durante lluvia/nieve. Las pacas envueltas y bajo techo están protegidas."/>
+		<text name="setting_moisture_baleRotRate" text="Velocidad de Pudrición de Pacas"/>
+		<text name="setting_moisture_baleRotRate_tooltip" text="Multiplicador de la velocidad de pérdida de volumen de pacas. Valores más altos significan pudrición más rápida."/>
+		<text name="setting_moisture_baleExposureDecayRate" text="Velocidad de Secado de Pacas"/>
+		<text name="setting_moisture_baleExposureDecayRate_tooltip" text="Qué tan rápido se secan las pacas después de que para la lluvia. Menor = secado más lento."/>
+		<text name="setting_moisture_showFieldMoisture" text="Mostrar Humedad del Campo"/>
+		<text name="setting_moisture_showFieldMoisture_tooltip" text="Muestra el nivel de humedad actual en tu posición en el HUD de información del campo."/>
+		<text name="setting_moisture_moistureMeterReporting" text="Reporte del Medidor de Humedad"/>
+		<text name="setting_moisture_moistureMeterReporting_tooltip" text="Cómo muestra las lecturas el medidor de humedad."/>
+		<text name="setting_moisture_moistureMeterReporting_blinking" text="Alerta Parpadeante"/>
+		<text name="setting_moisture_moistureMeterReporting_notification" text="Notificación"/>
+		
+		<!-- Generic On/Off -->
+		<text name="setting_setting_off" text="APAGADO"/>
+		<text name="setting_setting_on" text="ENCENDIDO"/>
+		
+		<!-- Multiplayer Permission -->
+		<text name="permission_moisture_moistureSettings" text="Cambiar Configuración de Humedad"/>
+		
+		<!-- Input Bindings -->
+		<text name="input_MOISTURE_MENU" text="Abrir Menú de Humedad"/>
+		
+		<!-- HUD Display -->
+		<text name="moistureSystem_fieldInfo" text="Humedad del Campo"/>
+		<text name="moistureSystem_moisture" text="Humedad"/>
+		<text name="moistureSystem_range" text="Rango Esperado"/>
+		<text name="moistureSystem_rainExposure" text="Exposición a la Lluvia"/>
+		<text name="moistureSystem_baleStatus" text="Estado"/>
+		<text name="moistureSystem_baleGettingWet" text="Mojándose"/>
+		<text name="moistureSystem_baleRottingSlowly" text="Pudriéndose Lentamente"/>
+		<text name="moistureSystem_baleRotting" text="Pudriéndose"/>
+		<text name="moistureSystem_baleRottingQuickly" text="Pudriéndose Rápidamente"/>
+		<text name="moistureSystem_baleDrying" text="Secándose"/>
+		
+		<!-- GUI -->
+		<text name="moistureSystem_gui_cropGradeValues" text="Valores de Grado de Cultivos"/>
+		<text name="moistureSystem_gui_description" text="Los datos a continuación muestran la clasificación de humedad para cada cultivo compatible. Se muestra el rango de humedad para el grado, y el multiplicador de precio para ese grado se muestra entre paréntesis."/>
+		<text name="moistureSystem_gui_cropName" text="Nombre del Cultivo"/>
+		<text name="moistureSystem_gui_gradeA" text="Grado A"/>
+		<text name="moistureSystem_gui_gradeB" text="Grado B"/>
+		<text name="moistureSystem_gui_gradeC" text="Grado C"/>
+		<text name="moistureSystem_gui_gradeD" text="Grado D"/>
+		
+		<!-- Calendar GUI -->
+		<text name="moistureSystem_gui_moistureCalendar" text="Calendario de Humedad"/>
+		<text name="moistureSystem_gui_currentEnvironment" text="Ambiente Actual"/>
+		<text name="moistureSystem_gui_calendarDescription" text="El calendario a continuación muestra el rango de humedad esperado para cada mes según tu configuración de ambiente actual. Los niveles de humedad están influenciados por las precipitaciones, la temperatura y la estación."/>
+		
+		<!-- Hand Tool -->
+		<text name="moistureSystem_moistureMeter" text="Medidor de Humedad"/>
+		<text name="moistureSystem_moistureMeterFunction" text="Medir niveles de humedad del campo"/>
+		<text name="moistureSystem_measureLocation" text="Medir Humedad"/>
+		<text name="moistureSystem_groundMoistureReading" text="Humedad del Suelo: %.2f%%"/>
+		
+		<!-- Help Menu -->
+		<text name="help_moisture_title" text="Sistema de Humedad"/>
+		
+		<!-- Overview Page -->
+		<text name="help_moisture_overview_title" text="Descripción General"/>
+		<text name="help_moisture_overview_1" text="El mod Sistema de Humedad introduce niveles de humedad dinámicos que afectan a los cultivos, el pasto y las pacas en toda tu granja. La humedad varía según la elevación del terreno, las condiciones climáticas y la hora del día."/>
+		<text name="help_moisture_overview_2" text="Esto crea una experiencia agrícola más realista donde el momento de la cosecha y la gestión del almacenamiento importan. Usa el Menú de Humedad (Shift+M) para ver tablas detalladas de grados de cultivos y calendarios de humedad."/>
+		
+		<!-- Field Moisture Page -->
+		<text name="help_moisture_field_title" text="Humedad del Campo"/>
+		<text name="help_moisture_field_1" text="La humedad del campo varía en tu granja según varios factores: Elevación del terreno (las áreas más bajas son más húmedas), condiciones climáticas (la lluvia y la nieve aumentan la humedad), temperatura (el clima más cálido acelera el secado) y hora del día (la humedad disminuye más durante el día)."/>
+		<text name="help_moisture_field_2" text="Los rangos de humedad mensuales cambian a lo largo del año según el tipo de ambiente elegido (Seco/Normal/Húmedo). Usa la herramienta manual medidor de humedad o habilita la visualización en el HUD en la configuración para monitorear los niveles de humedad."/>
+		
+		<!-- Crop Grading Page -->
+		<text name="help_moisture_grading_title" text="Calidad y Clasificación de Cultivos"/>
+		<text name="help_moisture_grading_1" text="Los cultivos cosechados se clasifican de A a D según su contenido de humedad. El Grado A es humedad óptima con precio completo, el Grado B es buena humedad con precio ligeramente reducido, el Grado C es humedad aceptable con precio moderadamente reducido, y el Grado D es humedad deficiente con precio significativamente reducido."/>
+		<text name="help_moisture_grading_2" text="Cada tipo de cultivo tiene su propio rango de humedad ideal. ¡Cosecha en el momento adecuado para maximizar tus ganancias! La humedad del campo se transfiere a tu material cosechado y se rastrea a través de vehículos, montones en el suelo y almacenamiento."/>
+		<text name="help_moisture_grading_3" text="Consulta los rangos de grados detallados para todos los cultivos compatibles en el Menú de Humedad (Shift+M). Los cultivos incluyen trigo, cebada, avena, maíz, colza, girasol, soja y muchos más."/>
+		
+		<!-- Grass & Hay Page -->
+		<text name="help_moisture_grass_title" text="Henificación y Heno"/>
+		<text name="help_moisture_grass_1" text="Gestiona la producción de heno con mecánicas realistas de secado de pasto. Usa una henificadora para esparcir y airear el pasto, reduciendo su contenido de humedad. ¡Puedes henificar múltiples veces para un secado más rápido! El clima afecta el secado: el sol lo acelera mientras que la lluvia aumenta la humedad."/>
+		<text name="help_moisture_grass_2" text="Cuando el pasto se seca lo suficiente (por debajo del 7% de humedad), se convierte automáticamente en heno. Si el heno se moja demasiado otra vez (por encima del 7% de humedad), se convierte de nuevo en pasto."/>
+		<text name="help_moisture_grass_3" text="Los montones de pasto acumulan tiempo de exposición a la lluvia cuando se dejan en el suelo durante clima húmedo. Después de suficiente exposición, el pasto comienza a pudrirse y pierde gradualmente volumen. Recoge o empaca tu pasto rápidamente para evitar pérdidas."/>
+		
+		<!-- Ground Rot Page -->
+		<text name="help_moisture_groundrot_title" text="Pudrición de Material en el Suelo"/>
+		<text name="help_moisture_groundrot_1" text="Tanto los montones de pasto como de paja dejados en el suelo rastrean la exposición a la lluvia. Los montones pueden tolerar algo de lluvia antes de que comience la degradación (período de tolerancia), pero cuanto más tiempo haya estado expuesto el material a la lluvia, más rápido se pudre."/>
+		<text name="help_moisture_groundrot_2" text="Los montones se secan lentamente cuando para la lluvia, pero una vez que comienza la pudrición, continúa. El material podrido desaparece gradualmente y pierde volumen. Recoge o empaca tu paja y pasto rápidamente para evitar pérdidas, especialmente antes del mal tiempo."/>
+		
+		<!-- Bales Page -->
+		<text name="help_moisture_bales_title" text="Gestión de Pacas"/>
+		<text name="help_moisture_bales_1" text="Las pacas dejadas expuestas al clima acumulan gradualmente tiempo de exposición a la lluvia cuando están descubiertas durante clima húmedo. Las pacas pueden tolerar algo de exposición antes de que comience la pudrición; esta fase inicial se llama 'Mojándose'."/>
+		<text name="help_moisture_bales_2" text="Después del período de tolerancia, las pacas entran en estados de pudrición progresivos: Pudriéndose Lentamente, Pudriéndose y Pudriéndose Rápidamente. Cuanto más tiempo hayan estado expuestas las pacas en el pasado, más rápido se pudren. Las pacas se secan lentamente cuando para la lluvia, pero una vez que comienza la pudrición, no pueden recuperarse y perderán gradualmente volumen."/>
+		<text name="help_moisture_bales_3" text="Protección: Las pacas envueltas y las pacas almacenadas bajo techo están protegidas del clima. Almacena las pacas en interiores, envuélvelas o véndelas rápidamente para prevenir pérdidas."/>
+		
+		<!-- Moisture Meter Page -->
+		<text name="help_moisture_meter_title" text="Uso del Medidor de Humedad"/>
+		<text name="help_moisture_meter_1" text="El medidor de humedad es una herramienta manual disponible en la sección de Herramientas Manuales de la tienda. Para usarlo: Compra el medidor de humedad, equípalo desde tu menú de herramientas manuales, luego presiona y mantén el botón de acción durante 4 segundos para obtener una lectura de humedad en tu ubicación actual."/>
+		<text name="help_moisture_meter_2" text="Alternativamente, puedes habilitar 'Mostrar Humedad del Campo' en la configuración del juego para ver la humedad en el HUD de información del campo sin usar la herramienta manual. Esto es útil para verificaciones rápidas mientras operas equipos."/>
+		
+		<!-- Settings Page -->
+		<text name="help_moisture_settings_title" text="Configuración"/>
+		<text name="help_moisture_settings_1" text="Elige entre tres preajustes climáticos en la configuración del juego: Seco (niveles de humedad más bajos), Normal (equilibrado, predeterminado) o Húmedo (niveles de humedad más altos). Cada preajuste afecta los rangos de humedad mensuales a lo largo del año."/>
+		<text name="help_moisture_settings_2" text="Ajusta finamente el comportamiento con configuraciones ajustables: Los Multiplicadores de Pérdida/Ganancia de Humedad controlan la velocidad de secado y humedecimiento, la Reducción de Humedad por Henificación ajusta el secado por pasada, y la configuración de Pudrición de Pacas controla si/qué tan rápido se deterioran las pacas."/>
+		<text name="help_moisture_settings_3" text="Otras configuraciones incluyen el Período de Tolerancia de Pacas (tolerancia a la lluvia antes de la pudrición), Velocidad de Secado de Pacas (velocidad de recuperación), activación de Visualización de Humedad del Campo y estilo de Reporte del Medidor de Humedad. En multijugador, el anfitrión/administrador controla estas configuraciones."/>
+	</texts>
+</l10n>

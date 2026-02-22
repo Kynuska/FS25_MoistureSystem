@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<l10n>
+	<translationContributors/>
+	<texts>
+		<!-- Settings Section -->
+		<text name="setting_moisture_section" text="Система Влажности"/>
+		
+		<!-- Settings -->
+		<text name="setting_moisture_environment" text="Климатическая Среда"/>
+		<text name="setting_moisture_environment_tooltip" text="Установить тип климата для расчёта влажности"/>
+		<text name="setting_moisture_environment_dry" text="СУХОЙ"/>
+		<text name="setting_moisture_environment_normal" text="НОРМАЛЬНЫЙ"/>
+		<text name="setting_moisture_environment_wet" text="ВЛАЖНЫЙ"/>
+		<text name="setting_moisture_moistureLossMultiplier" text="Множитель Потери Влажности"/>
+		<text name="setting_moisture_moistureLossMultiplier_tooltip" text="Контролирует скорость потери влажности (1-10)"/>
+		<text name="setting_moisture_moistureGainMultiplier" text="Множитель Набора Влажности"/>
+		<text name="setting_moisture_moistureGainMultiplier_tooltip" text="Контролирует скорость набора влажности от дождя (1-10)"/>
+		<text name="setting_moisture_teddingMoistureReduction" text="Снижение Влажности при Ворошении"/>
+		<text name="setting_moisture_teddingMoistureReduction_tooltip" text="Количество влажности, снижаемое за проход ворошилки (1-5%)"/>
+		<text name="setting_moisture_baleRotEnabled" text="Гниение Тюков"/>
+		<text name="setting_moisture_baleRotEnabled_tooltip" text="Включить гниение тюков во время дождя/снега. Обмотанные тюки и тюки под навесом защищены."/>
+		<text name="setting_moisture_baleRotRate" text="Скорость Гниения Тюков"/>
+		<text name="setting_moisture_baleRotRate_tooltip" text="Множитель скорости потери объёма тюков. Большие значения означают более быстрое гниение."/>
+
+		<text name="setting_moisture_baleExposureDecayRate" text="Скорость Сушки Тюков"/>
+		<text name="setting_moisture_baleExposureDecayRate_tooltip" text="Как быстро тюки высыхают после прекращения дождя. Ниже = медленнее сушка."/>
+		<text name="setting_moisture_showFieldMoisture" text="Показывать Влажность Поля"/>
+		<text name="setting_moisture_showFieldMoisture_tooltip" text="Отображать текущий уровень влажности в вашей позиции в HUD информации о поле."/>
+		<text name="setting_moisture_moistureMeterReporting" text="Отчёт Влагомера"/>
+		<text name="setting_moisture_moistureMeterReporting_tooltip" text="Как влагомер отображает показания."/>
+		<text name="setting_moisture_moistureMeterReporting_blinking" text="Мигающее Предупреждение"/>
+		<text name="setting_moisture_moistureMeterReporting_notification" text="Уведомление"/>
+		
+		<!-- Generic On/Off -->
+		<text name="setting_setting_off" text="ВЫКЛ"/>
+		<text name="setting_setting_on" text="ВКЛ"/>
+		
+		<!-- Multiplayer Permission -->
+		<text name="permission_moisture_moistureSettings" text="Изменить Настройки Влажности"/>
+		
+		<!-- Input Bindings -->
+		<text name="input_MOISTURE_MENU" text="Открыть Меню Влажности"/>
+		
+		<!-- HUD Display -->
+		<text name="moistureSystem_fieldInfo" text="Влажность Поля"/>
+		<text name="moistureSystem_moisture" text="Влажность"/>
+		<text name="moistureSystem_range" text="Ожидаемый Диапазон"/>
+		<text name="moistureSystem_rainExposure" text="Воздействие Дождя"/>
+		<text name="moistureSystem_baleStatus" text="Состояние"/>
+		<text name="moistureSystem_baleGettingWet" text="Намокает"/>
+		<text name="moistureSystem_baleRottingSlowly" text="Медленно Гниёт"/>
+		<text name="moistureSystem_baleRotting" text="Гниёт"/>
+		<text name="moistureSystem_baleRottingQuickly" text="Быстро Гниёт"/>
+		<text name="moistureSystem_baleDrying" text="Высыхает"/>
+		
+		<!-- GUI -->
+		<text name="moistureSystem_gui_cropGradeValues" text="Значения Качества Урожая"/>
+		<text name="moistureSystem_gui_description" text="Данные ниже показывают оценку влажности для каждой поддерживаемой культуры. Показан диапазон влажности для класса, а множитель цены для этого класса показан в скобках."/>
+		<text name="moistureSystem_gui_cropName" text="Название Культуры"/>
+		<text name="moistureSystem_gui_gradeA" text="Класс A"/>
+		<text name="moistureSystem_gui_gradeB" text="Класс B"/>
+		<text name="moistureSystem_gui_gradeC" text="Класс C"/>
+		<text name="moistureSystem_gui_gradeD" text="Класс D"/>
+		
+		<!-- Calendar GUI -->
+		<text name="moistureSystem_gui_moistureCalendar" text="Календарь Влажности"/>
+		<text name="moistureSystem_gui_currentEnvironment" text="Текущая Среда"/>
+		<text name="moistureSystem_gui_calendarDescription" text="Календарь ниже показывает ожидаемый диапазон влажности для каждого месяца на основе текущей настройки среды. Уровни влажности зависят от осадков, температуры и сезона."/>
+		
+		<!-- Hand Tool -->
+		<text name="moistureSystem_moistureMeter" text="Влагомер"/>
+		<text name="moistureSystem_moistureMeterFunction" text="Измерять уровни влажности поля"/>
+		<text name="moistureSystem_measureLocation" text="Измерить Влажность"/>
+		<text name="moistureSystem_groundMoistureReading" text="Влажность Почвы: %.2f%%"/>
+		
+		<!-- Help Menu -->
+		<text name="help_moisture_title" text="Система Влажности"/>
+		
+		<!-- Overview Page -->
+		<text name="help_moisture_overview_title" text="Обзор"/>
+		<text name="help_moisture_overview_1" text="Мод Система Влажности вводит динамические уровни влажности, которые влияют на урожай, траву и тюки по всей вашей ферме. Влажность меняется в зависимости от высоты местности, погодных условий и времени суток."/>
+		<text name="help_moisture_overview_2" text="Это создаёт более реалистичный фермерский опыт, где важны время уборки и управление хранением. Используйте Меню Влажности (Shift+M) для просмотра подробных таблиц качества урожая и календарей влажности."/>
+		
+		<!-- Field Moisture Page -->
+		<text name="help_moisture_field_title" text="Влажность Поля"/>
+		<text name="help_moisture_field_1" text="Влажность поля меняется на вашей ферме в зависимости от нескольких факторов: Высота местности (низкие участки более влажные), погодные условия (дождь и снег увеличивают влажность), температура (более тёплая погода ускоряет высыхание) и время суток (влажность снижается больше днём)."/>
+		<text name="help_moisture_field_2" text="Месячные диапазоны влажности меняются в течение года в зависимости от выбранного типа среды (Сухой/Нормальный/Влажный). Используйте ручной инструмент влагомер или включите отображение HUD в настройках для мониторинга уровней влажности."/>
+		
+		<!-- Crop Grading Page -->
+		<text name="help_moisture_grading_title" text="Качество и Оценка Урожая"/>
+		<text name="help_moisture_grading_1" text="Собранный урожай оценивается от A до D в зависимости от содержания влаги. Класс A — оптимальная влажность с полной ценой, Класс B — хорошая влажность с немного сниженной ценой, Класс C — приемлемая влажность с умеренно сниженной ценой, а Класс D — плохая влажность со значительно сниженной ценой."/>
+		<text name="help_moisture_grading_2" text="Каждый тип культуры имеет свой идеальный диапазон влажности. Собирайте урожай в нужное время, чтобы максимизировать прибыль! Влажность с поля переносится на собранный материал и отслеживается через транспортные средства, кучи на земле и хранилища."/>
+		<text name="help_moisture_grading_3" text="Посмотрите подробные диапазоны классов для всех поддерживаемых культур в Меню Влажности (Shift+M). Культуры включают пшеницу, ячмень, овёс, кукурузу, рапс, подсолнечник, соевые бобы и многое другое."/>
+		
+		<!-- Grass & Hay Page -->
+		<text name="help_moisture_grass_title" text="Ворошение Травы и Сено"/>
+		<text name="help_moisture_grass_1" text="Управляйте производством сена с реалистичной механикой сушки травы. Используйте ворошилку для распределения и аэрации травы, снижая её содержание влаги. Вы можете ворошить несколько раз для более быстрой сушки! Погода влияет на сушку — солнце ускоряет её, а дождь увеличивает влажность."/>
+		<text name="help_moisture_grass_2" text="Когда трава достаточно высыхает (ниже 7% влажности), она автоматически превращается в сено. Если сено снова слишком намокнет (выше 7% влажности), оно превращается обратно в траву."/>
+		<text name="help_moisture_grass_3" text="Кучи травы накапливают время воздействия дождя, когда их оставляют на земле во влажную погоду. После достаточного воздействия трава начинает гнить и постепенно теряет объём. Собирайте или тюкуйте траву быстро, чтобы избежать потерь."/>
+		
+		<!-- Ground Rot Page -->
+		<text name="help_moisture_groundrot_title" text="Гниение Материала на Земле"/>
+		<text name="help_moisture_groundrot_1" text="Кучи травы и соломы, оставленные на земле, отслеживают воздействие дождя. Кучи могут выдержать некоторое количество дождя до начала разложения (период терпимости), но чем дольше материал подвергался воздействию дождя, тем быстрее он гниёт."/>
+		<text name="help_moisture_groundrot_2" text="Кучи медленно сохнут, когда дождь прекращается, но как только гниение начинается, оно продолжается. Гниющий материал постепенно исчезает и теряет объём. Собирайте или тюкуйте солому и траву быстро, чтобы избежать потерь, особенно перед плохой погодой."/>
+		
+		<!-- Bales Page -->
+		<text name="help_moisture_bales_title" text="Управление Тюками"/>
+		<text name="help_moisture_bales_1" text="Тюки, оставленные без защиты от погоды, постепенно накапливают время воздействия дождя, когда они не покрыты во влажную погоду. Тюки могут выдержать некоторое воздействие до начала гниения — эта начальная фаза называется 'Намокает'."/>
+		<text name="help_moisture_bales_2" text="После периода терпимости тюки входят в прогрессивные состояния гниения: Медленно Гниёт, Гниёт и Быстро Гниёт. Чем дольше тюки подвергались воздействию в прошлом, тем быстрее они гниют. Тюки медленно высыхают, когда дождь прекращается, но как только гниение начинается, они не могут восстановиться и будут постепенно терять объём."/>
+		<text name="help_moisture_bales_3" text="Защита: Обмотанные тюки и тюки, хранящиеся под навесом, защищены от погоды. Храните тюки в помещении, обматывайте их или быстро продавайте, чтобы предотвратить потери."/>
+		
+		<!-- Moisture Meter Page -->
+		<text name="help_moisture_meter_title" text="Использование Влагомера"/>
+		<text name="help_moisture_meter_1" text="Влагомер — это ручной инструмент, доступный в разделе Ручные Инструменты магазина. Для его использования: Купите влагомер, экипируйте его из меню ручных инструментов, затем нажмите и удерживайте кнопку действия в течение 4 секунд, чтобы получить показание влажности в вашем текущем местоположении."/>
+		<text name="help_moisture_meter_2" text="Кроме того, вы можете включить 'Показывать Влажность Поля' в настройках игры, чтобы видеть влажность в HUD информации о поле без использования ручного инструмента. Это полезно для быстрых проверок во время работы с оборудованием."/>
+		
+		<!-- Settings Page -->
+		<text name="help_moisture_settings_title" text="Конфигурация"/>
+		<text name="help_moisture_settings_1" text="Выберите один из трёх климатических пресетов в настройках игры: Сухой (более низкие уровни влажности), Нормальный (сбалансированный, по умолчанию) или Влажный (более высокие уровни влажности). Каждый пресет влияет на месячные диапазоны влажности в течение года."/>
+		<text name="help_moisture_settings_2" text="Точная настройка поведения с регулируемыми параметрами: Множители Потери/Набора Влажности контролируют скорость сушки и увлажнения, Снижение Влажности при Ворошении регулирует сушку за проход, а настройки Гниения Тюков контролируют, как/как быстро тюки разлагаются."/>
+		<text name="help_moisture_settings_3" text="Другие настройки включают Период Терпимости Тюков (устойчивость к дождю до гниения), Скорость Сушки Тюков (скорость восстановления), переключение Отображения Влажности Поля и стиль Отчёта Влагомера. В многопользовательской игре хост/администратор контролирует эти настройки."/>
+	</texts>
+</l10n>

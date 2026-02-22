@@ -21,8 +21,6 @@
 		<text name="setting_moisture_baleRotEnabled_tooltip" text="Enable bale rotting during rain/snow. Wrapped bales and bales under shelter are protected."/>
 		<text name="setting_moisture_baleRotRate" text="Bale Rot Rate"/>
 		<text name="setting_moisture_baleRotRate_tooltip" text="Multiplier for bale volume loss rate. Higher values mean faster rotting."/>
-		<text name="setting_moisture_baleGracePeriod" text="Bale Grace Period"/>
-		<text name="setting_moisture_baleGracePeriod_tooltip" text="Amount of rain exposure before rotting begins. Bales slowly dry when rain stops."/>
 		<text name="setting_moisture_baleExposureDecayRate" text="Bale Drying Rate"/>
 		<text name="setting_moisture_baleExposureDecayRate_tooltip" text="How fast bales dry out after rain stops. Lower = slower drying."/>
 		<text name="setting_moisture_showFieldMoisture" text="Show Field Moisture"/>
