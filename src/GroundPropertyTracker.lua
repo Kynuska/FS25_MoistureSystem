@@ -123,7 +123,8 @@ function GroundPropertyTracker:delete()
     self.strawRotAccumulators = {}
 end
 
--- Calculate overlap area between cell and bounding box
+-- Calculate overlap area and dimensions between cell and bounding box
+-- Returns: overlapArea, overlapWidthX, overlapDepthZ
 function GroundPropertyTracker:calculateCellOverlap(cellX, cellZ, minX, maxX, minZ, maxZ)
     local halfSize = GroundPropertyTracker.GRID_SIZE / 2
     local cellMinX = cellX - halfSize
@@ -137,12 +138,14 @@ function GroundPropertyTracker:calculateCellOverlap(cellX, cellZ, minX, maxX, mi
     local overlapMinZ = math.max(cellMinZ, minZ)
     local overlapMaxZ = math.min(cellMaxZ, maxZ)
 
-    -- Calculate overlap area
+    -- Calculate overlap dimensions
     if overlapMinX < overlapMaxX and overlapMinZ < overlapMaxZ then
-        return (overlapMaxX - overlapMinX) * (overlapMaxZ - overlapMinZ)
+        local overlapWidth = overlapMaxX - overlapMinX
+        local overlapDepth = overlapMaxZ - overlapMinZ
+        return overlapWidth * overlapDepth, overlapWidth, overlapDepth
     end
 
-    return 0
+    return 0, 0, 0
 end
 
 -- Get affected grid cells and overlap areas
@@ -166,10 +169,16 @@ function GroundPropertyTracker:getAffectedGridCells(sx, sz, wx, wz, hx, hz)
         for gz = startGridZ, endGridZ, GroundPropertyTracker.GRID_SIZE do
             local gridX, gridZ = self:getGridPosition(gx + GroundPropertyTracker.GRID_SIZE / 2,
                 gz + GroundPropertyTracker.GRID_SIZE / 2)
-            local overlapArea = self:calculateCellOverlap(gridX, gridZ, minX, maxX, minZ, maxZ)
+            local overlapArea, overlapWidthX, overlapDepthZ = self:calculateCellOverlap(gridX, gridZ, minX, maxX, minZ, maxZ)
 
             if overlapArea > 0 then
-                table.insert(cells, { gridX = gridX, gridZ = gridZ, overlapArea = overlapArea })
+                table.insert(cells, {
+                    gridX = gridX,
+                    gridZ = gridZ,
+                    overlapArea = overlapArea,
+                    overlapWidthX = overlapWidthX,
+                    overlapDepthZ = overlapDepthZ
+                })
                 totalOverlapArea = totalOverlapArea + overlapArea
             end
         end
@@ -264,22 +273,54 @@ end
 function GroundPropertyTracker:markAreaTedded(sx, sz, wx, wz, hx, hz)
     if not self.isServer then return end
 
+    -- Calculate bounding box dimensions for diagnostics
+    local minX = math.min(sx, wx, hx)
+    local maxX = math.max(sx, wx, hx)
+    local minZ = math.min(sz, wz, hz)
+    local maxZ = math.max(sz, wz, hz)
+    local widthX = maxX - minX
+    local depthZ = maxZ - minZ
+    
     local affectedCells = self:getAffectedGridCells(sx, sz, wx, wz, hx, hz)
+    
+    -- Determine which axis is lateral (width) by looking at bounding box shape
+    -- The wider dimension of the bbox is the lateral dimension
+    local lateralIsX = widthX > depthZ
+    
+    print(string.format("[TEDDER] markAreaTedded: bbox=%.2fm×%.2fm affectedCells=%d lateralAxis=%s", 
+        widthX, depthZ, #affectedCells, lateralIsX and "X" or "Z"))
 
-    -- Calculate cell area and overlap threshold (>50% of cell must be within working area)
-    local cellArea = GroundPropertyTracker.GRID_SIZE * GroundPropertyTracker.GRID_SIZE
-    local overlapThreshold = cellArea * 0.5
+    -- Require MORE THAN 50% of cell size (>1m for 2m cells) in the lateral dimension
+    local lateralOverlapThreshold = GroundPropertyTracker.GRID_SIZE * 0.5  -- 1m for 2m cells
 
+    local bufferedCount = 0
+    local skippedCount = 0
+    local belowThresholdCount = 0
     for _, cell in ipairs(affectedCells) do
         local gridKey = self:getSimpleGridKey(cell.gridX, cell.gridZ)
 
         if not self.teddedGridCellsCooldown[gridKey] and not self.teddedGridCellsBuffer[gridKey] and not self.teddedGridCells[gridKey] then
-            -- Check if >50% of cell area overlaps the working area
-            if cell.overlapArea > overlapThreshold then
+            -- Check overlap in the lateral (width) dimension specifically
+            -- This filters out edge cells that are predominantly outside the working width
+            local lateralOverlap = lateralIsX and cell.overlapWidthX or cell.overlapDepthZ
+            
+            -- Check if lateral dimension >50% of cell size
+            if lateralOverlap > lateralOverlapThreshold then
                 self.teddedGridCellsBuffer[gridKey] = GroundPropertyTracker.DELAYED_PROCESSING_CYCLES
+                bufferedCount = bufferedCount + 1
+                print(string.format("[TEDDER]   Buffered cell: gridKey=%s lateralOverlap=%.2fm (X=%.2fm Z=%.2fm area=%.2f)", 
+                    gridKey, lateralOverlap, cell.overlapWidthX, cell.overlapDepthZ, cell.overlapArea))
+            else
+                belowThresholdCount = belowThresholdCount + 1
+                print(string.format("[TEDDER]   Below threshold: gridKey=%s lateralOverlap=%.2fm (need >%.2fm, X=%.2fm Z=%.2fm)", 
+                    gridKey, lateralOverlap, lateralOverlapThreshold, cell.overlapWidthX, cell.overlapDepthZ))
             end
+        else
+            skippedCount = skippedCount + 1
         end
     end
+    print(string.format("[TEDDER] markAreaTedded complete: buffered=%d belowThreshold=%d skipped=%d", 
+        bufferedCount, belowThresholdCount, skippedCount))
 end
 
 -- Mark area as mowed (cooldown)
@@ -458,12 +499,19 @@ end
 function GroundPropertyTracker:updateGrassMoisture(moistureDelta, dt)
     if not self.isServer then return end
     if moistureDelta == 0 then return end
+    
     -- Copy tedded cells for this cycle and clear the table for next cycle
     local teddedCellsThisCycle = {}
+    local teddedCount = 0
     for gridKey, _ in pairs(self.teddedGridCells) do
         teddedCellsThisCycle[gridKey] = true
+        teddedCount = teddedCount + 1
     end
     self.teddedGridCells = {}
+    
+    if teddedCount > 0 then
+        print(string.format("[TEDDER] updateGrassMoisture: processing %d tedded cells this cycle", teddedCount))
+    end
 
     local processedThisCycle = {} -- Track cells we've already processed to avoid double-reduction
 
@@ -504,6 +552,14 @@ end
 -- Handle tedded cells and create grass piles
 function GroundPropertyTracker:processTeddedCells(teddedCellsThisCycle, processedThisCycle, moistureSystem)
     local checkRadius = GroundPropertyTracker.GRID_SIZE / 2
+    local cellCount = 0
+    for _ in pairs(teddedCellsThisCycle) do
+        cellCount = cellCount + 1
+    end
+    
+    if cellCount > 0 then
+        print(string.format("[TEDDER] processTeddedCells: processing %d cells", cellCount))
+    end
 
     for gridKey, _ in pairs(teddedCellsThisCycle) do
         local gridX, gridZ = gridKey:match("([^_]+)_([^_]+)")
@@ -511,10 +567,17 @@ function GroundPropertyTracker:processTeddedCells(teddedCellsThisCycle, processe
         gridZ = tonumber(gridZ)
 
         if self.recentMowedCells[gridKey] then
+            print(string.format("[TEDDER]   Skipping cell %s (recently mowed)", gridKey))
             continue
         end
 
         local converter = g_fillTypeManager:getConverterDataByName("TEDDER")
+        local converterEntries = 0
+        for _ in pairs(converter) do
+            converterEntries = converterEntries + 1
+        end
+        print(string.format("[TEDDER]   Processing cell %s, converter entries: %d", gridKey, converterEntries))
+        
         for fromFillType, to in pairs(converter) do
             local targetFillType = to.targetFillTypeIndex
             if fromFillType == targetFillType then
@@ -522,6 +585,7 @@ function GroundPropertyTracker:processTeddedCells(teddedCellsThisCycle, processe
             end
             if fromFillType then
                 local key = self:getGridKey(gridX, gridZ, fromFillType)
+                local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fromFillType)
 
                 if not self.grassPiles[key] then
                     local existingVolume = DensityMapHeightUtil.getFillLevelAtArea(
@@ -531,19 +595,25 @@ function GroundPropertyTracker:processTeddedCells(teddedCellsThisCycle, processe
                         gridX - checkRadius, gridZ + checkRadius
                     )
 
+                    print(string.format("[TEDDER]     Checking fillType=%s volume=%.2f", fillTypeName, existingVolume))
+
                     if existingVolume > 0 then
                         local baseMoisture
                         if self.teddedGrassMoisture[gridKey] then
                             baseMoisture = self.teddedGrassMoisture[gridKey]
+                            print(string.format("[TEDDER]       Using stored tedded moisture: %.3f", baseMoisture))
                             self.teddedGrassMoisture[gridKey] = nil
                         else
                             baseMoisture = moistureSystem:getMoistureAtPosition(gridX, gridZ)
+                            print(string.format("[TEDDER]       Using field moisture: %.3f", baseMoisture))
                         end
 
                         local teddedMoisture = baseMoisture -
                             g_currentMission.MoistureSystem.settings.teddingMoistureReduction
                         teddedMoisture = math.max(GroundPropertyTracker.MIN_GRASS_MOISTURE,
                             math.min(GroundPropertyTracker.MAX_GRASS_MOISTURE, teddedMoisture))
+
+                        print(string.format("[TEDDER]       Creating grass pile: key=%s moisture=%.3f", key, teddedMoisture))
 
                         local properties = { moisture = teddedMoisture }
 
@@ -554,6 +624,8 @@ function GroundPropertyTracker:processTeddedCells(teddedCellsThisCycle, processe
                         self.teddedGridCellsCooldown[gridKey] = GroundPropertyTracker.TEDDED_COOLDOWN_CYCLES
                         self.teddedGridCells[gridKey] = nil -- Clear from teddedGridCells after processing
                     end
+                else
+                    print(string.format("[TEDDER]     Pile already exists for fillType=%s", fillTypeName))
                 end
             end
         end
@@ -696,6 +768,20 @@ end
 
 -- Decrement cooldowns and buffers
 function GroundPropertyTracker:decrementCooldownsAndBuffers()
+    local bufferMovedCount = 0
+    for gridKey, counter in pairs(self.teddedGridCellsBuffer) do
+        self.teddedGridCellsBuffer[gridKey] = counter - 1
+        if self.teddedGridCellsBuffer[gridKey] <= 0 then
+            self.teddedGridCellsBuffer[gridKey] = nil
+            self.teddedGridCells[gridKey] = true
+            bufferMovedCount = bufferMovedCount + 1
+        end
+    end
+    
+    if bufferMovedCount > 0 then
+        print(string.format("[TEDDER] Moved %d cells from buffer to teddedGridCells", bufferMovedCount))
+    end
+    
     for gridKey, counter in pairs(self.teddedGridCellsCooldown) do
         self.teddedGridCellsCooldown[gridKey] = counter - 1
         if self.teddedGridCellsCooldown[gridKey] <= 0 then

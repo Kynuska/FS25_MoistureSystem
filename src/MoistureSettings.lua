@@ -96,8 +96,8 @@ MoistureSettings.SETTINGS.showFieldMoisture = {
     ['permission'] = 'moistureSettings',
     ['values'] = { false, true },
     ['strings'] = {
-        g_i18n:getText("setting_off"),
-        g_i18n:getText("setting_on")
+        g_i18n:getText("setting_setting_off"),
+        g_i18n:getText("setting_setting_on")
     }
 }
 
