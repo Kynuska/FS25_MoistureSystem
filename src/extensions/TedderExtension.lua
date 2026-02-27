@@ -5,11 +5,6 @@ function MSTedderExtension:onStartWorkAreaProcessing(dt)
     local spec = self.spec_tedder
     if spec then
         spec.msTeddedAreasThisFrame = {}
-        print(string.format("[TEDDER] onStartWorkAreaProcessing: vehicle=%s initialized accumulator",
-            self:getName() or "unknown"))
-    else
-        print(string.format("[TEDDER] WARNING: onStartWorkAreaProcessing called but spec_tedder is nil on vehicle %s",
-            self:getName() or "unknown"))
     end
 end
 
@@ -24,41 +19,23 @@ function MSTedderExtension:processDropArea(superFunc, dropArea, fillType, amount
     local wx, wy, wz = getWorldTranslation(dropArea.width)
     local hx, hy, hz = getWorldTranslation(dropArea.height)
 
-    local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillType)
-    
-    -- Calculate drop area dimensions for diagnostics
-    local minX = math.min(sx, wx, hx)
-    local maxX = math.max(sx, wx, hx)
-    local minZ = math.min(sz, wz, hz)
-    local maxZ = math.max(sz, wz, hz)
-    local widthX = maxX - minX
-    local depthZ = maxZ - minZ
-    
-    print(string.format("[TEDDER] processDropArea: vehicle=%s fillType=%s amount=%.2f pos=(%.1f, %.1f, %.1f) area=%.2fm×%.2fm",
-        self:getName() or "unknown", fillTypeName or "nil", amount, sx, sy, sz, widthX, depthZ))
-
     local startX, startY, startZ, endX, endY, endZ, radius = DensityMapHeightUtil.getLineByArea(dropArea.start,
         dropArea.width, dropArea.height, true)
     local dropped, lineOffset = DensityMapHeightUtil.tipToGroundAroundLine(self, amount, fillType, startX, startY, startZ,
         endX, endY, endZ, radius, nil, dropArea.lineOffset, false, nil, false)
     dropArea.lineOffset = lineOffset
 
-
     if dropped > 0 then
-        print(string.format("[TEDDER] Grass dropped: %.2f liters, outputMoisture=%s",
-            dropped, dropArea.outputMoisture and string.format("%.3f", dropArea.outputMoisture) or "nil"))
-        
+
         -- Don't call addPile here - let updateGrassMoisture handle pile creation/update
         -- But store the pickup moisture so it can be used when recreating the pile
 
         -- Store the pickup moisture for affected grid cells
         if dropArea.outputMoisture then
             local affectedCells = tracker:getAffectedGridCells(sx, sz, wx, wz, hx, hz)
-            print(string.format("[TEDDER] Storing moisture for %d affected cells", #affectedCells))
             for _, cell in ipairs(affectedCells) do
                 local gridKey = tracker:getSimpleGridKey(cell.gridX, cell.gridZ)
                 tracker.teddedGrassMoisture[gridKey] = dropArea.outputMoisture
-                print(string.format("[TEDDER]   Cell gridKey=%s moisture=%.3f", gridKey, dropArea.outputMoisture))
             end
         end
 
@@ -66,17 +43,14 @@ function MSTedderExtension:processDropArea(superFunc, dropArea, fillType, amount
         local spec = self.spec_tedder
         if spec and spec.msTeddedAreasThisFrame then
             table.insert(spec.msTeddedAreasThisFrame, {
-                sx = sx, sz = sz,
-                wx = wx, wz = wz,
-                hx = hx, hz = hz
+                sx = sx,
+                sz = sz,
+                wx = wx,
+                wz = wz,
+                hx = hx,
+                hz = hz
             })
-            print(string.format("[TEDDER] Accumulated tedded area, total areas: %d", #spec.msTeddedAreasThisFrame))
-        else
-            print(string.format("[TEDDER] WARNING: spec_tedder or msTeddedAreasThisFrame is nil! spec=%s",
-                spec and "exists" or "nil"))
         end
-    else
-        print("[TEDDER] No grass was dropped (dropped=0)")
     end
     return dropped
 end
@@ -113,14 +87,8 @@ function MSTedderExtension:processTedderArea(_, workArea, dt)
         local existingProps = tracker:getPropertiesAtLocation(centerX, centerZ, fromFillType)
         if existingProps and existingProps.moisture then
             positionMoisture = existingProps.moisture
-            print(string.format("[TEDDER] Found existing pile moisture at (%.1f, %.1f): %.3f", 
-                centerX, centerZ, positionMoisture))
             break
         end
-    end
-    
-    if not positionMoisture then
-        print(string.format("[TEDDER] No existing pile moisture at (%.1f, %.1f)", centerX, centerZ))
     end
 
     local lsx, lsy, lsz, lex, ley, lez, lineRadius = DensityMapHeightUtil.getLineByAreaDimensions(sx, sy, sz, wx, wy, wz,
@@ -255,43 +223,35 @@ function MSTedderExtension:onEndWorkAreaProcessing(dt, hasProcessed)
     -- Process all accumulated tedded areas as one unified area
     local spec = self.spec_tedder
     local tracker = g_currentMission.groundPropertyTracker
-    
+
     if spec and spec.msTeddedAreasThisFrame and #spec.msTeddedAreasThisFrame > 0 and tracker then
-        print(string.format("[TEDDER] onEndWorkAreaProcessing: vehicle=%s areas=%d",
-            self:getName() or "unknown", #spec.msTeddedAreasThisFrame))
-        
+
         -- Calculate unified bounding box from all areas
         local minX, minZ = math.huge, math.huge
         local maxX, maxZ = -math.huge, -math.huge
-        
+
         for _, area in ipairs(spec.msTeddedAreasThisFrame) do
             minX = math.min(minX, area.sx, area.wx, area.hx)
             maxX = math.max(maxX, area.sx, area.wx, area.hx)
             minZ = math.min(minZ, area.sz, area.wz, area.hz)
             maxZ = math.max(maxZ, area.sz, area.wz, area.hz)
         end
-        
-        local bboxWidth = maxX - minX
-        local bboxDepth = maxZ - minZ
-        print(string.format("[TEDDER] Unified bounding box: (%.1f, %.1f) to (%.1f, %.1f) = %.2fm×%.2fm",
-            minX, minZ, maxX, maxZ, bboxWidth, bboxDepth))
-        
+
         -- Use full accumulated area - don't narrow
         -- The overlap filtering will handle ensuring cells are predominantly within working width
         local testSx, testSz = minX, minZ
         local testWx, testWz = maxX, minZ
         local testHx, testHz = minX, maxZ
-        
-        print(string.format("[TEDDER] Using full accumulated area: %.2fm×%.2fm",
-            bboxWidth, bboxDepth))
-        
+
         tracker:markAreaTedded(testSx, testSz, testWx, testWz, testHx, testHz)
-        
+
         -- Clear accumulator
         spec.msTeddedAreasThisFrame = {}
     end
 end
 
-Tedder.onStartWorkAreaProcessing = Utils.prependedFunction(Tedder.onStartWorkAreaProcessing, MSTedderExtension.onStartWorkAreaProcessing)
+Tedder.onStartWorkAreaProcessing = Utils.prependedFunction(Tedder.onStartWorkAreaProcessing,
+    MSTedderExtension.onStartWorkAreaProcessing)
 Tedder.processTedderArea = Utils.overwrittenFunction(Tedder.processTedderArea, MSTedderExtension.processTedderArea)
-Tedder.onEndWorkAreaProcessing = Utils.appendedFunction(Tedder.onEndWorkAreaProcessing, MSTedderExtension.onEndWorkAreaProcessing)
+Tedder.onEndWorkAreaProcessing = Utils.appendedFunction(Tedder.onEndWorkAreaProcessing,
+    MSTedderExtension.onEndWorkAreaProcessing)

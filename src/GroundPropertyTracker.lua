@@ -169,7 +169,8 @@ function GroundPropertyTracker:getAffectedGridCells(sx, sz, wx, wz, hx, hz)
         for gz = startGridZ, endGridZ, GroundPropertyTracker.GRID_SIZE do
             local gridX, gridZ = self:getGridPosition(gx + GroundPropertyTracker.GRID_SIZE / 2,
                 gz + GroundPropertyTracker.GRID_SIZE / 2)
-            local overlapArea, overlapWidthX, overlapDepthZ = self:calculateCellOverlap(gridX, gridZ, minX, maxX, minZ, maxZ)
+            local overlapArea, overlapWidthX, overlapDepthZ = self:calculateCellOverlap(gridX, gridZ, minX, maxX, minZ,
+                maxZ)
 
             if overlapArea > 0 then
                 table.insert(cells, {
@@ -280,18 +281,15 @@ function GroundPropertyTracker:markAreaTedded(sx, sz, wx, wz, hx, hz)
     local maxZ = math.max(sz, wz, hz)
     local widthX = maxX - minX
     local depthZ = maxZ - minZ
-    
+
     local affectedCells = self:getAffectedGridCells(sx, sz, wx, wz, hx, hz)
-    
+
     -- Determine which axis is lateral (width) by looking at bounding box shape
     -- The wider dimension of the bbox is the lateral dimension
     local lateralIsX = widthX > depthZ
-    
-    print(string.format("[TEDDER] markAreaTedded: bbox=%.2fm×%.2fm affectedCells=%d lateralAxis=%s", 
-        widthX, depthZ, #affectedCells, lateralIsX and "X" or "Z"))
 
     -- Require MORE THAN 50% of cell size (>1m for 2m cells) in the lateral dimension
-    local lateralOverlapThreshold = GroundPropertyTracker.GRID_SIZE * 0.5  -- 1m for 2m cells
+    local lateralOverlapThreshold = GroundPropertyTracker.GRID_SIZE * 0.5 -- 1m for 2m cells
 
     local bufferedCount = 0
     local skippedCount = 0
@@ -303,24 +301,18 @@ function GroundPropertyTracker:markAreaTedded(sx, sz, wx, wz, hx, hz)
             -- Check overlap in the lateral (width) dimension specifically
             -- This filters out edge cells that are predominantly outside the working width
             local lateralOverlap = lateralIsX and cell.overlapWidthX or cell.overlapDepthZ
-            
+
             -- Check if lateral dimension >50% of cell size
             if lateralOverlap > lateralOverlapThreshold then
                 self.teddedGridCellsBuffer[gridKey] = GroundPropertyTracker.DELAYED_PROCESSING_CYCLES
                 bufferedCount = bufferedCount + 1
-                print(string.format("[TEDDER]   Buffered cell: gridKey=%s lateralOverlap=%.2fm (X=%.2fm Z=%.2fm area=%.2f)", 
-                    gridKey, lateralOverlap, cell.overlapWidthX, cell.overlapDepthZ, cell.overlapArea))
             else
                 belowThresholdCount = belowThresholdCount + 1
-                print(string.format("[TEDDER]   Below threshold: gridKey=%s lateralOverlap=%.2fm (need >%.2fm, X=%.2fm Z=%.2fm)", 
-                    gridKey, lateralOverlap, lateralOverlapThreshold, cell.overlapWidthX, cell.overlapDepthZ))
             end
         else
             skippedCount = skippedCount + 1
         end
     end
-    print(string.format("[TEDDER] markAreaTedded complete: buffered=%d belowThreshold=%d skipped=%d", 
-        bufferedCount, belowThresholdCount, skippedCount))
 end
 
 -- Mark area as mowed (cooldown)
@@ -499,7 +491,7 @@ end
 function GroundPropertyTracker:updateGrassMoisture(moistureDelta, dt)
     if not self.isServer then return end
     if moistureDelta == 0 then return end
-    
+
     -- Copy tedded cells for this cycle and clear the table for next cycle
     local teddedCellsThisCycle = {}
     local teddedCount = 0
@@ -508,10 +500,6 @@ function GroundPropertyTracker:updateGrassMoisture(moistureDelta, dt)
         teddedCount = teddedCount + 1
     end
     self.teddedGridCells = {}
-    
-    if teddedCount > 0 then
-        print(string.format("[TEDDER] updateGrassMoisture: processing %d tedded cells this cycle", teddedCount))
-    end
 
     local processedThisCycle = {} -- Track cells we've already processed to avoid double-reduction
 
@@ -556,10 +544,6 @@ function GroundPropertyTracker:processTeddedCells(teddedCellsThisCycle, processe
     for _ in pairs(teddedCellsThisCycle) do
         cellCount = cellCount + 1
     end
-    
-    if cellCount > 0 then
-        print(string.format("[TEDDER] processTeddedCells: processing %d cells", cellCount))
-    end
 
     for gridKey, _ in pairs(teddedCellsThisCycle) do
         local gridX, gridZ = gridKey:match("([^_]+)_([^_]+)")
@@ -567,7 +551,6 @@ function GroundPropertyTracker:processTeddedCells(teddedCellsThisCycle, processe
         gridZ = tonumber(gridZ)
 
         if self.recentMowedCells[gridKey] then
-            print(string.format("[TEDDER]   Skipping cell %s (recently mowed)", gridKey))
             continue
         end
 
@@ -576,8 +559,7 @@ function GroundPropertyTracker:processTeddedCells(teddedCellsThisCycle, processe
         for _ in pairs(converter) do
             converterEntries = converterEntries + 1
         end
-        print(string.format("[TEDDER]   Processing cell %s, converter entries: %d", gridKey, converterEntries))
-        
+
         for fromFillType, to in pairs(converter) do
             local targetFillType = to.targetFillTypeIndex
             if fromFillType == targetFillType then
@@ -595,25 +577,19 @@ function GroundPropertyTracker:processTeddedCells(teddedCellsThisCycle, processe
                         gridX - checkRadius, gridZ + checkRadius
                     )
 
-                    print(string.format("[TEDDER]     Checking fillType=%s volume=%.2f", fillTypeName, existingVolume))
-
                     if existingVolume > 0 then
                         local baseMoisture
                         if self.teddedGrassMoisture[gridKey] then
                             baseMoisture = self.teddedGrassMoisture[gridKey]
-                            print(string.format("[TEDDER]       Using stored tedded moisture: %.3f", baseMoisture))
                             self.teddedGrassMoisture[gridKey] = nil
                         else
                             baseMoisture = moistureSystem:getMoistureAtPosition(gridX, gridZ)
-                            print(string.format("[TEDDER]       Using field moisture: %.3f", baseMoisture))
                         end
 
                         local teddedMoisture = baseMoisture -
                             g_currentMission.MoistureSystem.settings.teddingMoistureReduction
                         teddedMoisture = math.max(GroundPropertyTracker.MIN_GRASS_MOISTURE,
                             math.min(GroundPropertyTracker.MAX_GRASS_MOISTURE, teddedMoisture))
-
-                        print(string.format("[TEDDER]       Creating grass pile: key=%s moisture=%.3f", key, teddedMoisture))
 
                         local properties = { moisture = teddedMoisture }
 
@@ -624,8 +600,6 @@ function GroundPropertyTracker:processTeddedCells(teddedCellsThisCycle, processe
                         self.teddedGridCellsCooldown[gridKey] = GroundPropertyTracker.TEDDED_COOLDOWN_CYCLES
                         self.teddedGridCells[gridKey] = nil -- Clear from teddedGridCells after processing
                     end
-                else
-                    print(string.format("[TEDDER]     Pile already exists for fillType=%s", fillTypeName))
                 end
             end
         end
@@ -777,11 +751,7 @@ function GroundPropertyTracker:decrementCooldownsAndBuffers()
             bufferMovedCount = bufferMovedCount + 1
         end
     end
-    
-    if bufferMovedCount > 0 then
-        print(string.format("[TEDDER] Moved %d cells from buffer to teddedGridCells", bufferMovedCount))
-    end
-    
+
     for gridKey, counter in pairs(self.teddedGridCellsCooldown) do
         self.teddedGridCellsCooldown[gridKey] = counter - 1
         if self.teddedGridCellsCooldown[gridKey] <= 0 then
