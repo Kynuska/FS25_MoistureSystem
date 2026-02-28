@@ -384,10 +384,25 @@ function MoistureSystem:setObjectMoisture(uniqueId, fillType, moisture)
     if self.objectMoisture[uniqueId] == nil then
         self.objectMoisture[uniqueId] = {}
     end
-    self.objectMoisture[uniqueId][fillTypeName] = moisture
+    self.objectMoisture[uniqueId][fillTypeName] = self:hasFillType(uniqueId, fillType) and moisture or nil
 
     -- Then sync to clients
     g_client:getServerConnection():sendEvent(ObjectMoistureUpdateEvent.new(uniqueId, fillTypeName, moisture))
+
+    -- Check all other stored fill types and clear any that are now empty
+    if self.objectMoisture[uniqueId] then
+        for storedFillTypeName, storedMoisture in pairs(self.objectMoisture[uniqueId]) do
+            -- Skip the one we just set and any already nil
+            if storedFillTypeName ~= fillTypeName and storedMoisture ~= nil then
+                local storedFillType = g_fillTypeManager:getFillTypeIndexByName(storedFillTypeName)
+                if storedFillType and not self:hasFillType(uniqueId, storedFillType) then
+                    -- Object no longer has this fillType, clear it
+                    self.objectMoisture[uniqueId][storedFillTypeName] = nil
+                    g_client:getServerConnection():sendEvent(ObjectMoistureUpdateEvent.new(uniqueId, storedFillTypeName, nil))
+                end
+            end
+        end
+    end
 end
 
 ---
