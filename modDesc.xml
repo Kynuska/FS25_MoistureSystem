@@ -31,6 +31,8 @@ Github: https://github.com/sprkem/FS25_MoistureSystem
 Changelog:
 
 1.0.0.1 [WIP]:
+- Fix sporadic issue where crop would sell for a very low price
+- Fix various multiplayer issues
 - Add safety check to avoid an issue loading a game when there is a bale in a baler
 - Add Czech translation thanks to Kynuska
 - Add Polish translation thanks to KITT3000

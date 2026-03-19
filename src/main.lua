@@ -29,6 +29,7 @@ function MoistureSystem:loadMap()
     g_currentMission.baleRottingSystem = BaleRottingSystem.new()
 
     self.objectMoisture = {}
+    self.pendingObjectMoisture = {}
 
     -- Initialize LRU cache for getMoistureAtPosition
     self.moistureCache = {}
@@ -78,6 +79,12 @@ function MoistureSystem:loadGUI()
 end
 
 function MoistureSystem:update(dt)
+    -- Resolve pending objects on client (runs on both client and server)
+    self:resolvePendingObjects()
+    if g_currentMission.baleRottingSystem then
+        g_currentMission.baleRottingSystem:resolvePendingObjects()
+    end
+
     if not g_currentMission:getIsServer() then return end
 
     self.timeSinceLastUpdate = self.timeSinceLastUpdate + dt
@@ -805,26 +812,31 @@ function MoistureSystem:writeInitialClientState(streamId, connection)
     streamWriteBool(streamId, self.settings.showFieldMoisture)
     streamWriteInt32(streamId, self.settings.moistureMeterReporting)
 
-    -- Write object moisture data
+    -- Write object moisture data (only objects that can be resolved)
     local objectCount = 0
-    for _ in pairs(self.objectMoisture) do
-        objectCount = objectCount + 1
+    for uniqueId, _ in pairs(self.objectMoisture) do
+        local object = g_currentMission:getObjectByUniqueId(uniqueId)
+        if object ~= nil then
+            objectCount = objectCount + 1
+        end
     end
     streamWriteInt32(streamId, objectCount)
 
     for uniqueId, fillTypes in pairs(self.objectMoisture) do
         local object = g_currentMission:getObjectByUniqueId(uniqueId)
-        NetworkUtil.writeNodeObject(streamId, object)
+        if object ~= nil then
+            streamWriteInt32(streamId, NetworkUtil.getObjectId(object))
 
-        local fillTypeCount = 0
-        for _ in pairs(fillTypes) do
-            fillTypeCount = fillTypeCount + 1
-        end
-        streamWriteInt32(streamId, fillTypeCount)
+            local fillTypeCount = 0
+            for _ in pairs(fillTypes) do
+                fillTypeCount = fillTypeCount + 1
+            end
+            streamWriteInt32(streamId, fillTypeCount)
 
-        for fillTypeName, moisture in pairs(fillTypes) do
-            streamWriteString(streamId, fillTypeName)
-            streamWriteFloat32(streamId, moisture)
+            for fillTypeName, moisture in pairs(fillTypes) do
+                streamWriteString(streamId, fillTypeName)
+                streamWriteFloat32(streamId, moisture)
+            end
         end
     end
 end
@@ -851,24 +863,48 @@ function MoistureSystem:readInitialClientState(streamId, connection)
 
     -- Read object moisture data
     self.objectMoisture = {}
+    self.pendingObjectMoisture = {}
     local objectCount = streamReadInt32(streamId)
 
     for i = 1, objectCount do
-        local object = NetworkUtil.readNodeObject(streamId)
+        local objectId = streamReadInt32(streamId)
         local fillTypeCount = streamReadInt32(streamId)
 
-        self.objectMoisture[object.uniqueId] = {}
-
+        local fillTypes = {}
         for j = 1, fillTypeCount do
             local fillTypeName = streamReadString(streamId)
             local moisture = streamReadFloat32(streamId)
-            self.objectMoisture[object.uniqueId][fillTypeName] = moisture
+            fillTypes[fillTypeName] = moisture
+        end
+
+        local object = NetworkUtil.getObject(objectId)
+        if object ~= nil and object.uniqueId ~= nil then
+            self.objectMoisture[object.uniqueId] = fillTypes
+        else
+            table.insert(self.pendingObjectMoisture, { objectId = objectId, fillTypes = fillTypes })
         end
     end
 
     -- Clear moisture cache since we just got new data
     self.moistureCache = {}
     self.moistureCacheOrder = {}
+end
+
+function MoistureSystem:resolvePendingObjects()
+    if #self.pendingObjectMoisture == 0 then
+        return
+    end
+
+    local remaining = {}
+    for _, pending in ipairs(self.pendingObjectMoisture) do
+        local object = NetworkUtil.getObject(pending.objectId)
+        if object ~= nil and object.uniqueId ~= nil then
+            self.objectMoisture[object.uniqueId] = pending.fillTypes
+        else
+            table.insert(remaining, pending)
+        end
+    end
+    self.pendingObjectMoisture = remaining
 end
 
 function MoistureSystem.ShowMoistureGUI()

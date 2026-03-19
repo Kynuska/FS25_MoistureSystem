@@ -20,19 +20,16 @@ function SellingStationExtension:addFillLevelFromTool(superFunc, farmId, deltaFi
     -- Only apply moisture modifiers on server
     if g_currentMission:getIsServer() and deltaFillLevel > 0 then
         local moistureMultiplier = self:getMoistureMultiplierForSale(fillTypeIndex, fillInfo)
-        
+
         if moistureMultiplier ~= nil and moistureMultiplier ~= 1.0 then
             -- Initialize extraAttributes if needed
             if extraAttributes == nil then
                 extraAttributes = {}
             end
-            
-            -- Combine our moisture multiplier with any existing priceScale
-            local existingScale = extraAttributes.priceScale or 1.0
-            extraAttributes.priceScale = existingScale * moistureMultiplier
+            extraAttributes.priceScale = moistureMultiplier
         end
     end
-    
+
     -- Call original function with potentially modified extraAttributes
     return superFunc(self, farmId, deltaFillLevel, fillTypeIndex, fillInfo, toolType, extraAttributes)
 end

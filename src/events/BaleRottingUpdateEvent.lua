@@ -25,36 +25,49 @@ end
 
 function BaleRottingUpdateEvent:writeStream(streamId, connection)
     local count = 0
-    for _ in pairs(self.baleData) do
-        count = count + 1
+    for uniqueId, _ in pairs(self.baleData) do
+        local object = g_currentMission:getObjectByUniqueId(uniqueId)
+        if object ~= nil then
+            count = count + 1
+        end
     end
 
     streamWriteInt32(streamId, count)
 
     for uniqueId, data in pairs(self.baleData) do
         local object = g_currentMission:getObjectByUniqueId(uniqueId)
-        NetworkUtil.writeNodeObject(streamId, object)
-        streamWriteFloat32(streamId, data.exposure)
-        streamWriteFloat32(streamId, data.peakExposure)
-        streamWriteInt32(streamId, data.status)
+        if object ~= nil then
+            streamWriteInt32(streamId, NetworkUtil.getObjectId(object))
+            streamWriteFloat32(streamId, data.exposure)
+            streamWriteFloat32(streamId, data.peakExposure)
+            streamWriteInt32(streamId, data.status)
+        end
     end
 end
 
 function BaleRottingUpdateEvent:readStream(streamId, connection)
     self.baleData = {}
+    self.pendingBaleData = {}
 
     local count = streamReadInt32(streamId)
     for i = 1, count do
-        local object = NetworkUtil.readNodeObject(streamId)
+        local objectId = streamReadInt32(streamId)
         local exposure = streamReadFloat32(streamId)
         local peakExposure = streamReadFloat32(streamId)
         local status = streamReadInt32(streamId)
 
-        self.baleData[object.uniqueId] = {
+        local baleData = {
             exposure = exposure,
             peakExposure = peakExposure,
             status = status
         }
+
+        local object = NetworkUtil.getObject(objectId)
+        if object ~= nil and object.uniqueId ~= nil then
+            self.baleData[object.uniqueId] = baleData
+        else
+            table.insert(self.pendingBaleData, { objectId = objectId, baleData = baleData })
+        end
     end
 
     self:run(connection)
@@ -68,5 +81,10 @@ function BaleRottingUpdateEvent:run(connection)
     local baleRottingSystem = g_currentMission.baleRottingSystem
     if baleRottingSystem then
         baleRottingSystem.baleRainExposureTimes = self.baleData
+        if self.pendingBaleData and #self.pendingBaleData > 0 then
+            for _, pending in ipairs(self.pendingBaleData) do
+                table.insert(baleRottingSystem.pendingBaleRotting, pending)
+            end
+        end
     end
 end
