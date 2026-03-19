@@ -30,7 +30,8 @@ Github: https://github.com/sprkem/FS25_MoistureSystem
 
 Changelog:
 
-1.0.0.1 [WIP]:
+1.0.0.1:
+- Moisture and grade are now visible when harvesting on the fill HUD.
 - Fix sporadic issue where crop would sell for a very low price
 - Fix various multiplayer issues
 - Add safety check to avoid an issue loading a game when there is a bale in a baler
@@ -57,6 +58,17 @@ Funktionen:
 Umfangreiche Anpassungsoptionen ermöglichen es Ihnen, die Feuchtigkeitsdynamik, Wendeleffizienz, Verfallsparameter und Schnittstelleneinstellungen an Ihr bevorzugtes Spielerlebnis anzupassen. Ob Sie hartwöchige Realismus oder eine sanftere Einführung in die Feuchtigkeitsverwaltung bevorzugen – das System passt sich Ihrer Vision an.
 
 Github: https://github.com/sprkem/FS25_MoistureSystem
+
+Änderungsprotokoll:
+
+1.0.0.1:
+- Feuchtigkeit und Qualitätsstufe sind jetzt beim Ernten im Füllstand-HUD sichtbar.
+- Sporadisches Problem behoben, bei dem Ernte zu einem sehr niedrigen Preis verkauft wurde
+- Verschiedene Multiplayer-Probleme behoben
+- Sicherheitsprüfung hinzugefügt, um ein Problem beim Laden eines Spielstands zu vermeiden, wenn sich ein Ballen in einer Ballenpresse befindet
+- Tschechische Übersetzung hinzugefügt, dank Kynuska
+- Polnische Übersetzung hinzugefügt, dank KITT3000
+
 ]]>
         </de>
         <fr><![CDATA[Système D'Humidité
@@ -77,6 +89,16 @@ Caractéristiques :
 Les options de personnalisation étendues vous permettent de calibrer la dynamique d'humidité, l'efficacité du fanage, les paramètres de dégradation et les préférences d'interface pour correspondre à votre expérience de jeu préférée. Que vous cherchiez un réalisme hardcore ou une introduction plus douce à la gestion de l'humidité, le système s'adapte à votre vision.
 
 Github: https://github.com/sprkem/FS25_MoistureSystem
+
+Journal des modifications :
+
+1.0.0.1 :
+- L'humidité et la qualité sont désormais visibles lors de la récolte sur le HUD de remplissage.
+- Correction d'un problème sporadique où les récoltes se vendaient à un prix très bas
+- Correction de divers problèmes multijoueur
+- Ajout d'une vérification de sécurité pour éviter un problème de chargement de partie lorsqu'une balle se trouve dans une presse à balles
+- Ajout de la traduction tchèque grâce à Kynuska
+- Ajout de la traduction polonaise grâce à KITT3000
 
 ]]>
         </fr>

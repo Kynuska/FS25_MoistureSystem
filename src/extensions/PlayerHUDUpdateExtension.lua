@@ -26,6 +26,69 @@ end
 PlayerInputComponent.update = Utils.appendedFunction(PlayerInputComponent.update, MSPlayerHUDExtension.updatePlayerInput)
 
 ---
+-- Appended to getFillLevelInformation to show moisture and grade on vehicle fill level HUD
+-- After the original chain populates fillLevelData, we update infoText for fill types with moisture data
+-- Result: "Wheat (12.1% D) ——— 78%" instead of "Wheat ——— 78%"
+-- Note: receives (self, superFunc, display) because FillUnit is in a SpecializationUtil overwrite chain
+---
+function MSPlayerHUDExtension:getFillLevelInformationAppended(_, display)
+    local moistureSystem = g_currentMission.MoistureSystem
+    if moistureSystem == nil or self.uniqueId == nil then
+        return
+    end
+
+    local objectData = moistureSystem.objectMoisture[self.uniqueId]
+    if objectData == nil then
+        return
+    end
+
+    for _, data in ipairs(display.fillLevelData) do
+        if data.isValid and data.fillType ~= nil and data.fillType ~= FillType.UNKNOWN then
+            local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(data.fillType)
+            if fillTypeName ~= nil then
+                local moisture = objectData[fillTypeName]
+                if moisture ~= nil then
+                    local moistureText = MSPlayerHUDExtension.formatMoistureInfoText(data.fillType, moisture)
+                    if moistureText ~= nil then
+                        if data.infoText ~= nil then
+                            data.infoText = moistureText .. " " .. data.infoText
+                        else
+                            data.infoText = moistureText
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+
+FillUnit.getFillLevelInformation = Utils.appendedFunction(
+    FillUnit.getFillLevelInformation,
+    MSPlayerHUDExtension.getFillLevelInformationAppended
+)
+
+---
+-- Format moisture info text for the fill level HUD (compact format)
+-- @param fillTypeIndex: The filltype index
+-- @param moisture: Moisture value (0-1 scale)
+-- @return Formatted string like "12.1% D" or "12.1%" for non-graded types, or nil
+---
+function MSPlayerHUDExtension.formatMoistureInfoText(fillTypeIndex, moisture)
+    if moisture == nil then
+        return nil
+    end
+
+    local moistureText = string.format("%.1f%%", moisture * 100)
+    local grade, _ = CropValueMap.getGrade(fillTypeIndex, moisture)
+    if grade ~= nil then
+        local gradeNames = { "A", "B", "C", "D" }
+        moistureText = moistureText .. " " .. gradeNames[grade]
+    end
+
+    return moistureText
+end
+
+---
 -- Format moisture value with grade for display
 -- @param fillTypeIndex: The filltype index
 -- @param moisture: Moisture value (0-1 scale)
