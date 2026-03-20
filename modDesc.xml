@@ -7,6 +7,7 @@
         <en>Moisture System</en>
         <de>Feuchtigkeitssystem</de>
         <fr>Système D'Humidité</fr>
+        <cz>Systém vlhkosti</cz>
     </title>
     <description>
         <en><![CDATA[Moisture System
@@ -102,6 +103,36 @@ Journal des modifications :
 
 ]]>
         </fr>
+        <cz><![CDATA[Systém vlhkosti
+Proměňte svůj farmářský zážitek s propracovaným systémem simulace vlhkosti, který přináší realismus a strategickou hloubku do Farming Simulator 25. Tento komplexní mod zavádí dynamickou mechaniku vlhkosti, která zásadně mění váš přístup ke správě plodin, načasování sklizně a rozhodování o skladování.
+
+Zažijte autentické environmentální interakce, kde úrovně vlhkosti přirozeně kolísají po celé vaší farmě na základě nadmořské výšky terénu, převládajících povětrnostních vzorců (déšť, sněžení, teplotní výkyvy) a denních/nočních cyklů. Pole v nižších nadmořských výškách zůstávají vlhčí, zatímco vyšší oblasti schnou rychleji, takže zvažujte úrovně vlhkosti při plánování, které plodiny zasadit kam a kdy sklízet. Každé farmářské rozhodnutí získává novou váhu, když vyvažujete optimální načasování proti měnícím se podmínkám.
+
+Pokročilý systém kvality plodin: Vaše sklizené výnosy již nejsou jednotné komodity. Každá nakládka obdrží kvalitativní třídu od A (prémiová) po D (špatná) na základě obsahu vlhkosti při sklizni, s přímými ekonomickými důsledky v místě prodeje. Každý druh plodiny byl pečlivě kalibrován s jedinečnými optimálními okny vlhkosti, která odrážejí skutečné zemědělské standardy. Ovládněte tyto rozsahy a načasujte své operace přesně pro maximalizaci ziskovosti. Přístup ke komplexním tabulkám tříd a sezónním projekcím vlhkosti prostřednictvím integrovaného herního rozhraní (Shift+M).
+
+Funkce:
+- Simulace vlhkosti pole s ohledem na terén s měsíčními variacemi vzorců ve třech odlišných profilech prostředí (Suché/Vlhké/Normální)
+- Propracovaný systém správy trávy zahrnující progresivní mechaniku obracení, povětrnostně reagující rychlosti sušení a automatickou konverzi na seno při optimálních prahových hodnotách vlhkosti. Více průjezdů obracečem urychluje sušení, pokud to potřebujete.
+- Hnití na zemi: Hromady trávy a slámy ponechané venku hromadí vystavení dešti v průběhu času, což spouští progresivní ztrátu objemu, když se organický materiál rozpadá. Načasování sběru a lisování se stává kritickým. Seno se změní zpět na trávu, pokud se příliš navlhčí.
+- Hnití balíků: Nechráněné balíky sledují kumulativní vystavení dešti s počátečními tolerančními obdobími, eskalujícími rychlostmi rozpadu na základě historie vystavení a omezeným zotavením během suchých období. Strategické použití obalování a infrastruktury přístřešků chrání vaši investici.
+- Zakupte si ruční nástroj vlhkoměr v obchodě pro přesná měření pole a hromad na požádání (Můžete to zobrazit v HUD, pokud preferujete).
+
+Rozsáhlé možnosti přizpůsobení vám umožňují kalibrovat dynamiku vlhkosti, efektivitu obracení, parametry rozpadu a preference rozhraní tak, aby odpovídaly vašemu preferovanému hernímu zážitku. Ať už hledáte hardcore realismus nebo jemnější úvod do správy vlhkosti, systém se přizpůsobí vaší vizi.
+
+Github: https://github.com/sprkem/FS25_MoistureSystem
+
+Seznam změn:
+            
+1.0.0.1:
+- Vlhkost a třída jsou nyní viditelné při sklizni v HUD plnění.
+- Oprava sporadického problému, kdy se plodina prodala za velmi nízkou cenu
+- Oprava různých problémů s multiplayerem
+- Přidána bezpečnostní kontrola pro vyhnuti se problému při načítání hry, když je balík v lisu
+- Přidán český překlad díky Kynuska
+- Přidán polský překlad díky KITT3000
+            
+]]>
+        </cz>
     </description>
     <extraSourceFiles>
         <sourceFile filename="src/data/CropValueMap.lua"/>
